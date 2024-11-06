@@ -1,6 +1,6 @@
 import cuid from "cuid";
 import { relations, sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
@@ -16,7 +16,10 @@ export const user = sqliteTable("user", {
 
 	displayName: text("display_name").notNull(),
 	profilePicture: text("profile_picture"),
-});
+}, (table) => ({
+	emailIdx: index("user_email_idx").on(table.email),
+	externalIdIdx: index("user_external_id_idx").on(table.externalId),
+}));
 
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),
@@ -45,7 +48,13 @@ export const session = sqliteTable("session", {
 	cookieValue: text("cookie_value").notNull(),
 
 	label: text("label"),
-});
+}, (table) => ({
+	cookieValueExpiresIdx: index("session_cookie_value_expires_idx").on(
+		table.cookieValue,
+		table.expiresAt,
+	),
+	userIdIdx: index("session_user_id_idx").on(table.userId),
+}));
 
 export const sessionRelations = relations(session, ({ one }) => ({
 	user: one(user, {
@@ -67,7 +76,9 @@ export const list = sqliteTable("list", {
 
 	name: text("name").notNull(),
 	description: text("description"),
-});
+}, (table) => ({
+	ownerIdIdx: index("list_owner_id_idx").on(table.ownerId),
+}));
 
 export const listRelations = relations(list, ({ one, many }) => ({
 	owner: one(user, {
@@ -90,7 +101,10 @@ export const listMember = sqliteTable("list_member", {
 	listId: text("list_id").references(() => list.id).notNull(),
 
 	permissions: text("permissions"),
-});
+}, (table) => ({
+	userIdIdx: index("list_member_user_id_idx").on(table.userId),
+	listIdIdx: index("list_member_list_id_idx").on(table.listId),
+}));
 
 export const listMemberRelations = relations(listMember, ({ one }) => ({
 	list: one(list, {
@@ -119,7 +133,10 @@ export const listTag = sqliteTable("list_tag", {
 	description: text("description"),
 	color: text("color"),
 	icon: text("icon"),
-});
+}, (table) => ({
+	createdByIdx: index("list_tag_created_by_idx").on(table.createdBy),
+	listIdIdx: index("list_tag_list_id_idx").on(table.listId),
+}));
 
 export const listTagRelations = relations(listTag, ({ one }) => ({
 	list: one(list, {
@@ -151,7 +168,14 @@ export const listInvite = sqliteTable("list_invite", {
 
 	useLimit: integer("use_limit").default(1),
 	useCount: integer("use_count").default(0),
-});
+}, (table) => ({
+	createdByIdx: index("list_invite_created_by_idx").on(table.createdBy),
+	listIdIdx: index("list_invite_list_id_idx").on(table.listId),
+	codeEnabledIdx: index("list_invite_code_expired_idx").on(
+		table.code,
+		table.enabled,
+	),
+}));
 
 export const listInviteRelations = relations(listInvite, ({ one }) => ({
 	list: one(list, {
@@ -182,7 +206,19 @@ export const listItem = sqliteTable("list_item", {
 	price: text("price"),
 
 	checkedAt: integer("checked_at", { mode: "timestamp" }),
-});
+}, (table) => ({
+	listIdIdx: index("list_item_list_id_idx").on(table.listId),
+	listIdNameIdx: index("list_item_list_id_name_idx").on(
+		table.listId,
+		table.name,
+	),
+	listIdNameCheckedAtIdx: index("list_item_list_id_name_checked_at_idx").on(
+		table.listId,
+		table.name,
+		table.checkedAt,
+	),
+	createdByIdx: index("list_item_created_by_idx").on(table.createdBy),
+}));
 
 export const listItemRelations = relations(listItem, ({ one }) => ({
 	list: one(list, {
