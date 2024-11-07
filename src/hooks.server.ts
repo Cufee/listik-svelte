@@ -1,10 +1,8 @@
 import { Database, newClient } from "$lib/server/db";
-import { error, type Handle, redirect } from "@sveltejs/kit";
+import { type Handle, redirect } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 
-const db = new Database(newClient());
-
-const injectLocals = (): Handle => async ({ event, resolve }) => {
+const injectLocals = (db: Database): Handle => async ({ event, resolve }) => {
   event.locals.db = db;
   event.locals.session = null;
   event.locals.authenticated = false;
@@ -26,34 +24,4 @@ const injectLocals = (): Handle => async ({ event, resolve }) => {
   return response;
 };
 
-const csrf = (): Handle => async ({ event, resolve }) => {
-  const forbidden = ["POST", "PUT", "PATCH", "DELETE"]
-    .includes(event.request.method) &&
-    event.request.headers.get("origin") !== event.url.origin &&
-    is_form_content_type(event.request);
-
-  if (forbidden) {
-    return error(
-      403,
-      `Cross-site ${event.request.method} form submissions are forbidden`,
-    );
-  }
-
-  return resolve(event);
-};
-
-const is_content_type = (request: Request, ...types: string[]) => {
-  const type = request.headers.get("content-type")?.split(";", 1)[0].trim() ??
-    "";
-  return types.includes(type);
-};
-
-const is_form_content_type = (request: Request) => {
-  return is_content_type(
-    request,
-    "application/x-www-form-urlencoded",
-    "multipart/form-data",
-  );
-};
-
-export const handle = sequence(csrf(), injectLocals());
+export const handle = sequence(injectLocals(new Database(newClient())));
