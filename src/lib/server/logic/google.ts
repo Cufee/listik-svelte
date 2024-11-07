@@ -2,8 +2,8 @@ import { env as prv } from "$env/dynamic/private";
 import { env as pub } from "$env/dynamic/public";
 import { AppError, InputValidationError, type Result } from "$lib/result";
 import { OAuth2Client, type TokenPayload } from "google-auth-library";
+import type { Database } from "../db";
 import type { User } from "../db/schema";
-import { createUser, findUserByExternalId } from "../db/users";
 const oauthClient = new OAuth2Client({
   clientId: pub.PUBLIC_GOOGLE_CLIENT_ID,
   clientSecret: prv.GOOGLE_CLIENT_SECRET,
@@ -30,10 +30,11 @@ export async function verifyToken(
 }
 
 export async function getOrCreateUser(
+  db: Database,
   payload: TokenPayload,
 ): Promise<Result<User>> {
   { // existing user record
-    const user = await findUserByExternalId(payload.sub);
+    const user = await db.users.fromExternalId(payload.sub);
     if (user.ok) {
       return user;
     }
@@ -48,7 +49,7 @@ export async function getOrCreateUser(
       error: new InputValidationError("email is not verified"),
     };
   }
-  return await createUser({
+  return await db.users.create({
     email: payload.email,
     externalId: payload.sub,
     displayName: payload.name || payload.email,

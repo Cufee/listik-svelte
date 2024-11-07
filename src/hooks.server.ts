@@ -1,6 +1,7 @@
-import { db } from "$lib/server/db";
-import { getSessionWithUser } from "$lib/server/db/sessions";
+import { Database, newClient } from "$lib/server/db";
 import { type Handle, redirect } from "@sveltejs/kit";
+
+const db = new Database(newClient());
 
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.db = db;
@@ -9,7 +10,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const sessionCookie = event.cookies.get("lk-session");
   if (!!sessionCookie) {
-    const session = await getSessionWithUser(sessionCookie, true);
+    const session = await db.sessions.findByCookie(sessionCookie, true);
     if (session.ok) {
       event.locals.session = session.data;
       event.locals.authenticated = !!session.data.user?.id;

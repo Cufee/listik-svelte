@@ -5,7 +5,7 @@ import { newSession } from "$lib/server/logic/session";
 import { error, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
-export const POST: RequestHandler = async ({ cookies, request }) => {
+export const POST: RequestHandler = async ({ cookies, request, locals }) => {
   const cookieToken = cookies.get("g_csrf_token");
   if (!cookieToken) {
     logger.debug("missing g_csrf_token cookie");
@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
     });
   }
 
-  const user = await getOrCreateUser(payload.data);
+  const user = await getOrCreateUser(locals.db, payload.data);
   if (!user.ok) {
     logger.debug("google auth failed, failed to create a user", {
       userId: payload.data.sub,
@@ -69,6 +69,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 
   // Create a session
   const session = await newSession(
+    locals.db,
     user.data.id,
     request.headers.get("User-Agent") || "",
   );

@@ -1,0 +1,32 @@
+services:
+  migrate:
+    image: listik-migrate
+    build:
+      dockerfile: Dockerfile.migrate
+    env_file:
+      - .env
+    volumes:
+      - ${DATABASE_PATH}:/data
+    networks:
+      - dokploy-network
+
+  listik:
+    image: listik
+    build:
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+    command: /app
+    env_file:
+      - .env
+    volumes:
+      - ${DATABASE_PATH}:/data
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true

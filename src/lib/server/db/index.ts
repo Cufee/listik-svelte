@@ -4,12 +4,32 @@ import { AppError, type Result } from "$lib/result";
 
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+import { ListOperations } from "./lists";
 import * as schema from "./schema";
+import { SessionOperations } from "./sessions";
+import { UserOperations } from "./users";
 
-if (!env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
-const client = createClient({ url: env.DATABASE_URL });
-export const db = drizzle(client, { schema });
-export type Database = typeof db;
+export type Client = ReturnType<typeof newClient>;
+
+export class Database {
+  public db: Client;
+  public lists: ListOperations;
+  public users: UserOperations;
+  public sessions: SessionOperations;
+
+  constructor(db: Client) {
+    this.db = db;
+    this.lists = new ListOperations(db);
+    this.users = new UserOperations(db);
+    this.sessions = new SessionOperations(db);
+  }
+}
+
+export function newClient() {
+  if (!env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
+  const client = createClient({ url: env.DATABASE_URL });
+  return drizzle(client, { schema });
+}
 
 export class DatabaseError extends AppError {
   constructor(message: string, cause?: unknown) {

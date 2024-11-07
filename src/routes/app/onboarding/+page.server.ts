@@ -1,4 +1,3 @@
-import { countUserLists, createNewList } from "$lib/server/db/lists";
 import { parseForm } from "$lib/server/logic/forms";
 import {
   type ActionFailure,
@@ -32,7 +31,9 @@ export const actions = {
       });
     }
 
-    const listsCount = await countUserLists(locals.session.user.id);
+    const listsCount = await locals.db.lists.visibleToUserCount(
+      locals.session.user.id,
+    );
 
     // validate and redeem the code
     if (form.code?.length < 5 || form.code?.length > 10) {
@@ -76,8 +77,10 @@ export const actions = {
       });
     }
 
-    const listsCount = await countUserLists(locals.session.user.id);
-    const list = await createNewList({
+    const listsCount = await locals.db.lists.visibleToUserCount(
+      locals.session.user.id,
+    );
+    const list = await locals.db.lists.create({
       description: form.description,
       ownerId: locals.session.user.id,
       name: form.name,
