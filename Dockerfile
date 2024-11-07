@@ -1,8 +1,5 @@
 FROM oven/bun:latest
 
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
-
 WORKDIR /app
 
 COPY package.json ./

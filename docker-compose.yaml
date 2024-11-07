@@ -14,8 +14,6 @@ services:
     image: listik
     build:
       dockerfile: Dockerfile
-      args:
-        - DATABASE_URL=${DATABASE_URL}
     command: /app
     env_file:
       - .env
