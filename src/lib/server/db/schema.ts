@@ -32,27 +32,6 @@ export const userRelations = relations(users, ({ many }) => ({
 	createdInvites: many(listInvites),
 }));
 
-export const nonces = sqliteTable("nonce", {
-	id: text("id").primaryKey().$defaultFn(() => cuid()),
-	createAt: integer("create_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	),
-
-	value: text().notNull().unique(),
-	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-
-	usedBy: integer("user_id").references(() => users.id),
-	used: integer("used", { mode: "boolean" }).default(false),
-}, (table) => ({
-	valueIdx: index("nonce_value_idx").on(table.value),
-	valueUsedExpiresIdx: index("nonce_value_used_expires_idx").on(
-		table.value,
-		table.used,
-	),
-}));
-
-export interface Nonce extends InferSelectModel<typeof nonces> {}
-
 export const sessions = sqliteTable("session", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
 	createAt: integer("create_at", { mode: "timestamp" }).default(
