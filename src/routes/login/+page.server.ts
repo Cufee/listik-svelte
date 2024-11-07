@@ -3,6 +3,6 @@ import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (locals.authenticated === true) {
-    throw redirect(303, "/app");
+    return redirect(307, "/app");
   }
 };

@@ -17,7 +17,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   if (event.url.pathname.startsWith("/app") && !event.locals.authenticated) {
-    throw redirect(303, "/login");
+    return redirect(303, "/login");
   }
 
   const response = await resolve(event);

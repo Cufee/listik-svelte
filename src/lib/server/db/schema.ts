@@ -75,8 +75,7 @@ export const lists = sqliteTable("list", {
 		sql`(CURRENT_TIMESTAMP)`,
 	).$onUpdateFn(() => new Date()),
 
-	ownerId: text("owner_id").references(() => users.id),
-
+	ownerId: text("owner_id").references(() => users.id).notNull(),
 	name: text("name").notNull(),
 	description: text("description"),
 }, (table) => ({
@@ -91,6 +90,7 @@ export const listRelations = relations(lists, ({ one, many }) => ({
 		references: [users.id],
 	}),
 	members: many(listMembers),
+	items: many(listItems),
 }));
 
 export const listMembers = sqliteTable("list_member", {

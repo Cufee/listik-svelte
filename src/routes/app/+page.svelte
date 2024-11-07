@@ -1,8 +1,17 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import ListCard from '$lib/componenets/ListCard.svelte';
 
-	let { data }: { data: PageData } = $props();
+	let { data } = $props();
 </script>
 
-<h1>App Home</h1>
-{data.user.displayName}
+<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-2">
+		{#each data.lists as list}
+			<ListCard {list} />
+		{/each}
+	</div>
+
+	<div class="flex items-center justify-center">
+		<button class="text-primary underline">create a new list</button>
+	</div>
+</div>
