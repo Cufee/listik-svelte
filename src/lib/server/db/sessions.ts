@@ -1,4 +1,3 @@
-import { logger } from "$lib/logger";
 import type { Result } from "$lib/result";
 import { eq } from "drizzle-orm";
 import moment from "moment";
@@ -15,8 +14,6 @@ export async function getSessionWithUser(
   cookieValue: string,
   refresh: boolean,
 ): Promise<Result<SessionWithUser>> {
-  logger.debug("retrieving session with user", { cookie: cookieValue });
-
   const session = await databaseDo(() => {
     return db.query.sessions.findFirst({
       with: { user: true },
@@ -31,14 +28,9 @@ export async function getSessionWithUser(
     return session;
   }
   if (!session.data) {
-    logger.debug("session not found", { cookie: cookieValue });
     return { ok: false, error: new DatabaseError("session not found") };
   }
   if (!session.data.user || !session.data.user.id) {
-    logger.debug("session has no user", {
-      cookie: cookieValue,
-      id: session.data.id,
-    });
     return { ok: true, data: { ...session.data, user: null } };
   }
 
@@ -52,13 +44,6 @@ export async function getSessionWithUser(
         .add(sessionDurationDays, "days")
         .toDate();
       sessionUpdate.expiresAt = expiration;
-
-      logger.debug("updating session expiration", {
-        cookie: cookieValue,
-        id: session.data.id,
-        current: session.data.expiresAt,
-        new: expiration,
-      });
     }
 
     const sessionId = session.data.id;
@@ -69,13 +54,6 @@ export async function getSessionWithUser(
         .execute(); // async in the background
     }, "failed to update a session record");
   }
-
-  logger.debug("found a valid session", {
-    cookie: cookieValue,
-    id: session.data.id,
-    user: session.data.user.id,
-  });
-
   return { ok: true, data: { ...session.data, user: session.data.user } };
 }
 
