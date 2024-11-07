@@ -9,8 +9,8 @@ RUN bun install
 
 COPY . .
 
-RUN bun run build
-
 ENV NODE_ENV=production
+
+RUN bun run build
 
 ENTRYPOINT [ "bun", "/app/build/index.js" ]
