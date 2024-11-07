@@ -11,4 +11,6 @@ COPY . .
 
 RUN bun run build
 
+ENV NODE_ENV=production
+
 ENTRYPOINT [ "bun", "/app/build/index.js" ]
