@@ -1,4 +1,7 @@
 node_modules
+
+# Temporary files
+_scratchpad.ts
 tmp
 
 # Output

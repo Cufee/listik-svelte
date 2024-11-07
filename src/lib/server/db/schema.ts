@@ -1,8 +1,8 @@
 import cuid from "cuid";
-import { relations, sql } from "drizzle-orm";
+import { type InferSelectModel, relations, sql } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const user = sqliteTable("user", {
+export const users = sqliteTable("user", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
 	createAt: integer("create_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
@@ -21,19 +21,40 @@ export const user = sqliteTable("user", {
 	externalIdIdx: index("user_external_id_idx").on(table.externalId),
 }));
 
-export const userRelations = relations(user, ({ many }) => ({
-	sessions: many(session),
-	lists: many(listMember),
-	ownedLists: many(list),
-	createdTags: many(listTag),
-	createdItems: many(listItem),
-	createdInvites: many(listInvite),
+export interface User extends InferSelectModel<typeof users> {}
+
+export const userRelations = relations(users, ({ many }) => ({
+	sessions: many(sessions),
+	lists: many(listMembers),
+	ownedLists: many(lists),
+	createdTags: many(listTags),
+	createdItems: many(listItems),
+	createdInvites: many(listInvites),
 }));
 
-export const session = sqliteTable("session", {
+export const nonces = sqliteTable("nonce", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
-	userId: integer("user_id").references(() => user.id).notNull(),
+	createAt: integer("create_at", { mode: "timestamp" }).default(
+		sql`(CURRENT_TIMESTAMP)`,
+	),
 
+	value: text().notNull().unique(),
+	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+
+	usedBy: integer("user_id").references(() => users.id),
+	used: integer("used", { mode: "boolean" }).default(false),
+}, (table) => ({
+	valueIdx: index("nonce_value_idx").on(table.value),
+	valueUsedExpiresIdx: index("nonce_value_used_expires_idx").on(
+		table.value,
+		table.used,
+	),
+}));
+
+export interface Nonce extends InferSelectModel<typeof nonces> {}
+
+export const sessions = sqliteTable("session", {
+	id: text("id").primaryKey().$defaultFn(() => cuid()),
 	createAt: integer("create_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
 	),
@@ -41,6 +62,7 @@ export const session = sqliteTable("session", {
 		sql`(CURRENT_TIMESTAMP)`,
 	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 
+	userId: integer("user_id").references(() => users.id).notNull(),
 	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
 	lastUsedAt: integer("last_used_at", { mode: "timestamp" }).notNull(),
 
@@ -56,14 +78,16 @@ export const session = sqliteTable("session", {
 	userIdIdx: index("session_user_id_idx").on(table.userId),
 }));
 
-export const sessionRelations = relations(session, ({ one }) => ({
-	user: one(user, {
-		fields: [session.userId],
-		references: [user.id],
+export interface Session extends InferSelectModel<typeof sessions> {}
+
+export const sessionRelations = relations(sessions, ({ one }) => ({
+	user: one(users, {
+		fields: [sessions.userId],
+		references: [users.id],
 	}),
 }));
 
-export const list = sqliteTable("list", {
+export const lists = sqliteTable("list", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
 	createAt: integer("create_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
@@ -72,7 +96,7 @@ export const list = sqliteTable("list", {
 		sql`(CURRENT_TIMESTAMP)`,
 	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 
-	ownerId: text("owner_id").references(() => user.id),
+	ownerId: text("owner_id").references(() => users.id),
 
 	name: text("name").notNull(),
 	description: text("description"),
@@ -80,15 +104,17 @@ export const list = sqliteTable("list", {
 	ownerIdIdx: index("list_owner_id_idx").on(table.ownerId),
 }));
 
-export const listRelations = relations(list, ({ one, many }) => ({
-	owner: one(user, {
-		fields: [list.ownerId],
-		references: [user.id],
+export interface List extends InferSelectModel<typeof lists> {}
+
+export const listRelations = relations(lists, ({ one, many }) => ({
+	owner: one(users, {
+		fields: [lists.ownerId],
+		references: [users.id],
 	}),
-	members: many(listMember),
+	members: many(listMembers),
 }));
 
-export const listMember = sqliteTable("list_member", {
+export const listMembers = sqliteTable("list_member", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
 	createAt: integer("create_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
@@ -97,8 +123,8 @@ export const listMember = sqliteTable("list_member", {
 		sql`(CURRENT_TIMESTAMP)`,
 	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 
-	userId: text("user_id").references(() => user.id).notNull(),
-	listId: text("list_id").references(() => list.id).notNull(),
+	userId: text("user_id").references(() => users.id).notNull(),
+	listId: text("list_id").references(() => lists.id).notNull(),
 
 	permissions: text("permissions"),
 }, (table) => ({
@@ -106,18 +132,20 @@ export const listMember = sqliteTable("list_member", {
 	listIdIdx: index("list_member_list_id_idx").on(table.listId),
 }));
 
-export const listMemberRelations = relations(listMember, ({ one }) => ({
-	list: one(list, {
-		fields: [listMember.listId],
-		references: [list.id],
+export interface ListMember extends InferSelectModel<typeof listMembers> {}
+
+export const listMemberRelations = relations(listMembers, ({ one }) => ({
+	list: one(lists, {
+		fields: [listMembers.listId],
+		references: [lists.id],
 	}),
-	user: one(user, {
-		fields: [listMember.userId],
-		references: [user.id],
+	user: one(users, {
+		fields: [listMembers.userId],
+		references: [users.id],
 	}),
 }));
 
-export const listTag = sqliteTable("list_tag", {
+export const listTags = sqliteTable("list_tag", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
 	createAt: integer("create_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
@@ -126,8 +154,8 @@ export const listTag = sqliteTable("list_tag", {
 		sql`(CURRENT_TIMESTAMP)`,
 	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 
-	listId: text("list_id").references(() => list.id).notNull(),
-	createdBy: text("created_by").references(() => user.id).notNull(),
+	listId: text("list_id").references(() => lists.id).notNull(),
+	createdBy: text("created_by").references(() => users.id).notNull(),
 
 	name: text("name").notNull(),
 	description: text("description"),
@@ -138,18 +166,20 @@ export const listTag = sqliteTable("list_tag", {
 	listIdIdx: index("list_tag_list_id_idx").on(table.listId),
 }));
 
-export const listTagRelations = relations(listTag, ({ one }) => ({
-	list: one(list, {
-		fields: [listTag.listId],
-		references: [list.id],
+export interface ListTag extends InferSelectModel<typeof listTags> {}
+
+export const listTagRelations = relations(listTags, ({ one }) => ({
+	list: one(lists, {
+		fields: [listTags.listId],
+		references: [lists.id],
 	}),
-	user: one(user, {
-		fields: [listTag.createdBy],
-		references: [user.id],
+	user: one(users, {
+		fields: [listTags.createdBy],
+		references: [users.id],
 	}),
 }));
 
-export const listInvite = sqliteTable("list_invite", {
+export const listInvites = sqliteTable("list_invite", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
 	createAt: integer("create_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
@@ -158,8 +188,8 @@ export const listInvite = sqliteTable("list_invite", {
 		sql`(CURRENT_TIMESTAMP)`,
 	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 
-	createdBy: text("created_by").references(() => user.id).notNull(),
-	listId: text("list_id").references(() => list.id).notNull(),
+	createdBy: text("created_by").references(() => users.id).notNull(),
+	listId: text("list_id").references(() => lists.id).notNull(),
 
 	permissions: text("permissions"),
 
@@ -177,18 +207,20 @@ export const listInvite = sqliteTable("list_invite", {
 	),
 }));
 
-export const listInviteRelations = relations(listInvite, ({ one }) => ({
-	list: one(list, {
-		fields: [listInvite.listId],
-		references: [list.id],
+export interface ListInvite extends InferSelectModel<typeof listInvites> {}
+
+export const listInviteRelations = relations(listInvites, ({ one }) => ({
+	list: one(lists, {
+		fields: [listInvites.listId],
+		references: [lists.id],
 	}),
-	user: one(user, {
-		fields: [listInvite.createdBy],
-		references: [user.id],
+	user: one(users, {
+		fields: [listInvites.createdBy],
+		references: [users.id],
 	}),
 }));
 
-export const listItem = sqliteTable("list_item", {
+export const listItems = sqliteTable("list_item", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
 	createAt: integer("create_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
@@ -197,8 +229,8 @@ export const listItem = sqliteTable("list_item", {
 		sql`(CURRENT_TIMESTAMP)`,
 	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 
-	createdBy: text("created_by").references(() => user.id).notNull(),
-	listId: text("list_id").references(() => list.id).notNull(),
+	createdBy: text("created_by").references(() => users.id).notNull(),
+	listId: text("list_id").references(() => lists.id).notNull(),
 
 	name: text("name").notNull(),
 	description: text("description"),
@@ -220,13 +252,15 @@ export const listItem = sqliteTable("list_item", {
 	createdByIdx: index("list_item_created_by_idx").on(table.createdBy),
 }));
 
-export const listItemRelations = relations(listItem, ({ one }) => ({
-	list: one(list, {
-		fields: [listItem.listId],
-		references: [list.id],
+export interface ListItem extends InferSelectModel<typeof listItems> {}
+
+export const listItemRelations = relations(listItems, ({ one }) => ({
+	list: one(lists, {
+		fields: [listItems.listId],
+		references: [lists.id],
 	}),
-	user: one(user, {
-		fields: [listItem.createdBy],
-		references: [user.id],
+	user: one(users, {
+		fields: [listItems.createdBy],
+		references: [users.id],
 	}),
 }));
