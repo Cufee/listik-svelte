@@ -1,6 +1,7 @@
+import { logger } from "$lib/logger";
 import { db } from "$lib/server/db";
 import { getSessionWithUser } from "$lib/server/db/sessions";
-import type { Handle } from "@sveltejs/kit";
+import { type Handle, redirect } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.db = db;
@@ -11,9 +12,18 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (!!sessionCookie) {
     const session = await getSessionWithUser(sessionCookie, true);
     if (session.ok) {
+      logger.debug("found a valid session from cookie");
       event.locals.session = session.data;
       event.locals.authenticated = !!session.data.user?.id;
+    } else {
+      logger.debug("no valid session found from cookie", session.error);
     }
   }
-  return resolve(event);
+
+  if (event.url.pathname.startsWith("/app") && !event.locals.authenticated) {
+    throw redirect(303, "/login");
+  }
+
+  const response = await resolve(event);
+  return response;
 };

@@ -1,5 +1,7 @@
+import { env } from "$env/dynamic/private";
 import { logger } from "$lib/logger";
 import { getOrCreateUser, verifyToken } from "$lib/server/logic/google";
+import { newSession } from "$lib/server/logic/session";
 import { error, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
@@ -9,6 +11,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
     logger.debug("missing g_csrf_token cookie");
     error(400, { message: "Failed to log in with Google. Please try again." });
   }
+
   const form = await request.formData();
   const formToken = form.get("g_csrf_token");
   if (cookieToken !== formToken) {
@@ -33,7 +36,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
   }
 
   // Check if email is verified
-  if (!!payload.data.email) {
+  if (!payload.data.email) {
     logger.debug("google auth failed, missing email", {
       userId: payload.data.sub,
     });
@@ -64,9 +67,30 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
     });
   }
 
-  // Create a session cookie
+  // Create a session
+  const session = await newSession(
+    user.data.id,
+    request.headers.get("User-Agent") || "",
+  );
+  if (!session.ok) {
+    logger.debug("google auth failed, failed to create a session", {
+      userId: payload.data.sub,
+      error: session.error,
+    });
+    error(500, {
+      message: "Failed to log in with Google. Please try again.",
+    });
+  }
 
-  // Update the user info in the background
+  cookies.set("lk-session", session.data.cookieValue, {
+    path: "/",
+    domain: env.COOKIE_DOMAIN,
+    expires: session.data.expiresAt,
+    secure: true,
+    httpOnly: true,
+  });
 
-  redirect(307, "/app");
+  // TODO: Update the user info in the background
+
+  redirect(303, "/app");
 };

@@ -1,0 +1,8 @@
+import type { User } from "$lib/server/db/schema";
+import type { PageServerLoad } from "./$types";
+
+export const load: PageServerLoad = async ({ locals }) => {
+  return {
+    user: locals.session.user as User,
+  };
+};

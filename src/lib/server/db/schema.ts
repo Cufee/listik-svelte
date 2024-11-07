@@ -41,7 +41,7 @@ export const sessions = sqliteTable("session", {
 		sql`(CURRENT_TIMESTAMP)`,
 	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 
-	userId: integer("user_id").references(() => users.id).notNull(),
+	userId: text("user_id").references(() => users.id).notNull(),
 	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
 	lastUsedAt: integer("last_used_at", { mode: "timestamp" }).notNull(),
 

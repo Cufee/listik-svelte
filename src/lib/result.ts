@@ -12,13 +12,14 @@ export class AppError extends Error {
     this.code = code;
     this.cause = cause;
   }
+}
 
-  static is<T extends AppError>(
-    this: new (...args: any[]) => T,
-    error: unknown,
-  ): error is T {
-    return error instanceof this;
-  }
+// Helper function to check error type
+export function isAppError<T extends typeof AppError>(
+  error: unknown,
+  errorType: T,
+): error is InstanceType<T> {
+  return error instanceof errorType;
 }
 
 export class InputValidationError extends AppError {

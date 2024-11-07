@@ -1,5 +1,5 @@
 import type { Result } from "$lib/result";
-import { databaseDo, DatabaseError, db } from ".";
+import { databaseDo, DatabaseError, db, IncorrectReturnsLength } from ".";
 import { type User, users } from "./schema";
 
 export async function findUserByExternalId(id: string): Promise<Result<User>> {
@@ -29,7 +29,7 @@ export async function createUser(
   if (result.data.length !== 1) {
     return {
       ok: false,
-      error: new DatabaseError("incorrect number of records returned"),
+      error: IncorrectReturnsLength,
     };
   }
   return { ok: true, data: result.data[0] };
