@@ -9,20 +9,26 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
   const cookieToken = cookies.get("g_csrf_token");
   if (!cookieToken) {
     logger.debug("missing g_csrf_token cookie");
-    error(400, { message: "Failed to log in with Google. Please try again." });
+    return error(400, {
+      message: "Failed to log in with Google. Please try again.",
+    });
   }
 
   const form = await request.formData();
   const formToken = form.get("g_csrf_token");
   if (cookieToken !== formToken) {
     logger.debug("missing or invalid g_csrf_token in form");
-    error(400, { message: "Failed to log in with Google. Please try again." });
+    return error(400, {
+      message: "Failed to log in with Google. Please try again.",
+    });
   }
 
   const credential = form.get("credential");
   if (!credential) {
     logger.debug("missing credential in form");
-    error(400, { message: "Failed to log in with Google. Please try again." });
+    return error(400, {
+      message: "Failed to log in with Google. Please try again.",
+    });
   }
 
   // Validate token
@@ -32,7 +38,9 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
       "google auth failed to validate credential",
       payload.error,
     );
-    error(400, { message: "Failed to log in with Google. Please try again." });
+    return error(400, {
+      message: "Failed to log in with Google. Please try again.",
+    });
   }
 
   // Check if email is verified
@@ -40,7 +48,7 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
     logger.debug("google auth failed, missing email", {
       userId: payload.data.sub,
     });
-    error(400, {
+    return error(400, {
       message:
         "Failed to log in with Google. Your account is not eligible to register for our app.",
     });
@@ -49,7 +57,7 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
     logger.debug("google auth failed, unverified email", {
       userId: payload.data.sub,
     });
-    error(400, {
+    return error(400, {
       message:
         "You need to verify your Google account email address before using our app.",
     });
@@ -61,7 +69,7 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
       userId: payload.data.sub,
       error: user.error,
     });
-    error(400, {
+    return error(400, {
       message:
         "Failed to log in with Google. Your account might not eligible to register for our app at this time.",
     });
@@ -78,7 +86,7 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
       userId: payload.data.sub,
       error: session.error,
     });
-    error(500, {
+    return error(500, {
       message: "Failed to log in with Google. Please try again.",
     });
   }
@@ -93,5 +101,5 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
 
   // TODO: Update the user info in the background
 
-  redirect(303, "/app");
+  return redirect(303, "/app");
 };
