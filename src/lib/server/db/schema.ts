@@ -9,7 +9,7 @@ export const users = sqliteTable("user", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+	).$onUpdateFn(() => new Date()),
 
 	email: text("email").notNull(),
 	externalId: text("external_id").notNull().unique(),
@@ -39,7 +39,7 @@ export const sessions = sqliteTable("session", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+	).$onUpdateFn(() => new Date()),
 
 	userId: text("user_id").references(() => users.id).notNull(),
 	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
@@ -73,7 +73,7 @@ export const lists = sqliteTable("list", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+	).$onUpdateFn(() => new Date()),
 
 	ownerId: text("owner_id").references(() => users.id),
 
@@ -100,7 +100,7 @@ export const listMembers = sqliteTable("list_member", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+	).$onUpdateFn(() => new Date()),
 
 	userId: text("user_id").references(() => users.id).notNull(),
 	listId: text("list_id").references(() => lists.id).notNull(),
@@ -131,7 +131,7 @@ export const listTags = sqliteTable("list_tag", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+	).$onUpdateFn(() => new Date()),
 
 	listId: text("list_id").references(() => lists.id).notNull(),
 	createdBy: text("created_by").references(() => users.id).notNull(),
@@ -165,7 +165,7 @@ export const listInvites = sqliteTable("list_invite", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+	).$onUpdateFn(() => new Date()),
 
 	createdBy: text("created_by").references(() => users.id).notNull(),
 	listId: text("list_id").references(() => lists.id).notNull(),
@@ -206,7 +206,7 @@ export const listItems = sqliteTable("list_item", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
+	).$onUpdateFn(() => new Date()),
 
 	createdBy: text("created_by").references(() => users.id).notNull(),
 	listId: text("list_id").references(() => lists.id).notNull(),

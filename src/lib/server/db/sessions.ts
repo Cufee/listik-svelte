@@ -1,5 +1,6 @@
 import { logger } from "$lib/logger";
 import type { Result } from "$lib/result";
+import { eq } from "drizzle-orm";
 import moment from "moment";
 import { databaseDo, DatabaseError, db, IncorrectReturnsLength } from ".";
 import { type Session, sessions, type User } from "./schema";
@@ -59,8 +60,13 @@ export async function getSessionWithUser(
         new: expiration,
       });
     }
+
+    const sessionId = session.data.id;
     databaseDo(() => {
-      return db.update(sessions).set(sessionUpdate).execute(); // async in the background
+      return db.update(sessions)
+        .set(sessionUpdate)
+        .where(eq(sessions.id, sessionId))
+        .execute(); // async in the background
     }, "failed to update a session record");
   }
 
