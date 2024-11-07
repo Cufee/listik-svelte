@@ -1,7 +1,7 @@
 import { logger } from "$lib/logger";
 import type { Result } from "$lib/result";
 import moment from "moment";
-import { databaseDo, db } from ".";
+import { databaseDo, DatabaseError, db } from ".";
 import { type Session, sessions, type User } from "./schema";
 
 const sessionDurationDays = 90;
@@ -31,7 +31,7 @@ export async function getSessionWithUser(
   }
   if (!session.data) {
     logger.debug("session not found", { cookie: cookieValue });
-    return { ok: false, message: "session not found", error: null };
+    return { ok: false, error: new DatabaseError("session not found") };
   }
   if (!session.data.user || !session.data.user.id) {
     logger.debug("session has no user", {

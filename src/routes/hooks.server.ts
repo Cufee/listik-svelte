@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db";
-import { getSessionWithUser } from "$lib/server/db/session";
+import { getSessionWithUser } from "$lib/server/db/sessions";
 import type { Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
