@@ -76,8 +76,11 @@ export const lists = sqliteTable("list", {
 	).$onUpdateFn(() => new Date()),
 
 	ownerId: text("owner_id").references(() => users.id).notNull(),
+
 	name: text("name").notNull(),
 	description: text("description"),
+	color: text("color"),
+	icon: text("icon"),
 }, (table) => ({
 	ownerIdIdx: index("list_owner_id_idx").on(table.ownerId),
 }));

@@ -12,6 +12,6 @@
 	</div>
 
 	<div class="flex items-center justify-center">
-		<button class="text-primary underline">create a new list</button>
+		<a href="/app/list/new" class="text-primary underline">create a new list</a>
 	</div>
 </div>

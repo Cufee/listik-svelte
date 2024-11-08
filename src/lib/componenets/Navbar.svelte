@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import type { User } from '$lib/server/db/schema';
+	import GoogleSignin from './GoogleSignin.svelte';
 	import Logo from './Logo.svelte';
 
 	let { user }: { user: User | null } = $props();
@@ -7,7 +9,7 @@
 
 <div class="navbar bg-base-100 p-0">
 	<div class="flex-1">
-		<a href="/app" class="flex items-center">
+		<a href={!!user ? '/app' : '/'} class="flex items-center">
 			<Logo class="size-10 text-primary" />
 		</a>
 	</div>
@@ -33,7 +35,7 @@
 				</ul>
 			</div>
 		</div>
-	{:else}
-		<a href="/login" class="btn btn-primary btn-md">Login</a>
+	{:else if $page.url.pathname !== '/login'}
+		<GoogleSignin />
 	{/if}
 </div>
