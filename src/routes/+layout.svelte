@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 
-	import Navbar from '$lib/componenets/Navbar.svelte';
+	import Navbar from '$lib/components/Navbar.svelte';
 	import type { Snippet } from 'svelte';
 	import type { LayoutData } from './$types';
 

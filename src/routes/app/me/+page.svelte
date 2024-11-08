@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Crown from '$lib/componenets/icons/Crown.svelte';
+	import Crown from '$lib/components/icons/Crown.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

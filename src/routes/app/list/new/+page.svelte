@@ -22,6 +22,8 @@
 				<input
 					name="name"
 					type="text"
+					minlength="3"
+					maxlength="14"
 					aria-label="list name"
 					class="input input-bordered grow"
 					placeholder="my awesome list"
@@ -39,6 +41,7 @@
 					<span class="badge badge-info">Optional</span>
 				</div>
 				<textarea
+					maxlength="80"
 					name="description"
 					aria-label="list description"
 					class="textarea textarea-bordered"

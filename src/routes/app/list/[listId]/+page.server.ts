@@ -1,5 +1,11 @@
 import type { ListItem } from "$lib/server/db/schema";
-import { type ActionFailure, type Actions, redirect } from "@sveltejs/kit";
+import { parseForm } from "$lib/server/logic/forms";
+import {
+  type ActionFailure,
+  type Actions,
+  fail,
+  redirect,
+} from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, params }) => {
@@ -48,25 +54,25 @@ export const actions = {
       return redirect(303, "/app");
     }
 
-    // const form = parseForm(await request.formData());
-    // const errors: Record<string, string> = {};
-    // if (!form.name) {
-    //   errors.name = "Name cannot be left blank";
-    // }
-    // if (form.name && (form.name.length < 3 || form.name.length > 14)) {
-    //   errors.name = "Name should be between 3 and 14 characters";
-    // }
+    const form = parseForm(await request.formData());
+    const errors: Record<string, string> = {};
+    if (!form.name) {
+      errors.name = "item name cannot be blank";
+    }
+    if (form.name && (form.name.length < 3 || form.name.length > 32)) {
+      errors.name = "item name should be between 3 and 32 characters";
+    }
     // if (form.description && form.description.length > 80) {
     //   errors.description = "Description cannot be longer than 80 characters";
     // }
-    // if (Object.keys(errors).length > 0) {
-    //   console.log(form);
-    //   return fail(400, {
-    //     errors,
-    //     values: form,
-    //     invalid: true,
-    //   });
-    // }
+    if (Object.keys(errors).length > 0) {
+      console.log(form);
+      return fail(400, {
+        errors,
+        values: form,
+        success: false,
+      });
+    }
 
     // const list = await locals.db.lists.create({
     //   name: form.name,
@@ -79,6 +85,6 @@ export const actions = {
     //   return error(500, "Failed to create a list");
     // }
 
-    return { success: true, item: { id: "asd" } as ListItem };
+    return { success: true, item: { id: "asd", name: form.name } as ListItem };
   },
 } satisfies Actions;

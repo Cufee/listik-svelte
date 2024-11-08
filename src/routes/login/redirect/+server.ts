@@ -79,7 +79,7 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
   const session = await newSession(
     locals.db,
     user.data.id,
-    request.headers.get("User-Agent") || "",
+    request.headers.get("User-Agent") ?? "",
   );
   if (!session.ok) {
     logger.debug("google auth failed, failed to create a session", {

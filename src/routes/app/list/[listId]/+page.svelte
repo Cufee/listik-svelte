@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import Pencil from '$lib/componenets/icons/Pencil.svelte';
-	import Plus from '$lib/componenets/icons/Plus.svelte';
-	import ShoppingCard from '$lib/componenets/icons/ShoppingCard.svelte';
+	import Pencil from '$lib/components/icons/Pencil.svelte';
+	import Plus from '$lib/components/icons/Plus.svelte';
+	import Settings from '$lib/components/icons/Settings.svelte';
+	import ShoppingCard from '$lib/components/icons/ShoppingCard.svelte';
 	import { untrack } from 'svelte';
 
 	let { data, form } = $props();
@@ -17,9 +18,15 @@
 		}
 	});
 
-	let mode: 'shopping' | 'edit' = $state('shopping');
+	let mode: 'shopping' | 'edit' = $state(items.length === 0 ? 'edit' : 'shopping');
 	const toggleMode = () => {
 		mode = mode === 'shopping' ? 'edit' : 'shopping';
+	};
+
+	const clearError = (event: Event) => {
+		const target = event.target as HTMLInputElement;
+		target.classList.remove('input-error');
+		target.placeholder = target.dataset.placeholder ?? '';
 	};
 </script>
 
@@ -43,14 +50,21 @@
 					<ShoppingCard class="size-6" />
 				{/if}
 			</button>
-			<a href={`/app/list/${data.list.id}/manage`} class="btn btn-dark">Settings</a>
+			<a href={`/app/list/${data.list.id}/manage`} class="btn btn-dark btn-square">
+				<Settings class="size-6" />
+			</a>
 		</div>
 	</div>
 
 	<div class="flex flex-col gap-2 grow">
+		{#if items.length === 0}
+			<span class="m-auto text-lg text-center text-gray-400">
+				use the input below to add a new item
+			</span>
+		{/if}
 		{#each items as item}
 			<div class="max-w-3xl px-3 py-2 rounded-lg bg-base-200">
-				{item.id}
+				{item.name}
 			</div>
 		{/each}
 	</div>
@@ -61,9 +75,14 @@
 				<input
 					name="name"
 					type="text"
-					value={form?.values?.name}
-					placeholder={form?.errors?.name || 'bananas'}
+					data-placeholder="bananas"
 					class="w-full rounded-r-none input grow bg-base-200"
+					minlength="3"
+					maxlength="32"
+					placeholder={form?.errors?.name || 'bananas'}
+					class:input-error={!!form?.errors?.name}
+					value={form?.values?.name}
+					oninput={clearError}
 				/>
 				<button formaction="?/new-item" class="rounded-l-none btn btn-square btn-primary">
 					<Plus class="size-6" />

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ListCard from '$lib/componenets/ListCard.svelte';
+	import ListCard from '$lib/components/ListCard.svelte';
 
 	let { data } = $props();
 </script>

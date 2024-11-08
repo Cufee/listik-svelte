@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Back from '$lib/components/icons/Back.svelte';
+
 	let { data } = $props();
 </script>
 
@@ -11,7 +13,9 @@
 			{/if}
 		</div>
 		<div class="flex gap-2">
-			<a href={`/app/list/${data.list.id}`} class="btn btn-dark">Back</a>
+			<a href={`/app/list/${data.list.id}`} class="btn btn-dark btn-square">
+				<Back class="size-6" />
+			</a>
 		</div>
 	</div>
 </div>
