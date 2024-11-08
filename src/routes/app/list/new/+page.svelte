@@ -42,7 +42,7 @@
 					name="description"
 					aria-label="list description"
 					class="textarea textarea-bordered"
-					placeholder="family shoppoing list">{form?.values?.description}</textarea
+					placeholder="family shopping list">{form?.values?.description}</textarea
 				>
 			</div>
 			{#if form?.errors?.description}

@@ -1,9 +1,22 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Pencil from '$lib/componenets/icons/Pencil.svelte';
 	import Plus from '$lib/componenets/icons/Plus.svelte';
 	import ShoppingCard from '$lib/componenets/icons/ShoppingCard.svelte';
+	import { untrack } from 'svelte';
 
-	let { data } = $props();
+	let { data, form } = $props();
+
+	let items = $state(data.list.items);
+	$effect(() => {
+		if (form?.success) {
+			// on form submit, add the new item to items array
+			untrack(() => {
+				items.push(form.item);
+			});
+		}
+	});
+
 	let mode: 'shopping' | 'edit' = $state('shopping');
 	const toggleMode = () => {
 		mode = mode === 'shopping' ? 'edit' : 'shopping';
@@ -35,25 +48,27 @@
 	</div>
 
 	<div class="flex flex-col gap-2 grow">
-		{#each data.list.items as item}
-			<div class="max-w-3xl p-2 rounded-lg bg-base-200 grow">
-				{item.name}
+		{#each items as item}
+			<div class="max-w-3xl px-3 py-2 rounded-lg bg-base-200">
+				{item.id}
 			</div>
 		{/each}
 	</div>
 
 	{#if mode === 'edit'}
 		<div class="sticky bottom-0 flex justify-center w-full">
-			<div class="flex max-w-3xl grow">
+			<form class="flex max-w-3xl grow" method="POST" action="?/new-item" use:enhance>
 				<input
+					name="name"
 					type="text"
-					placeholder="bananas"
+					value={form?.values?.name}
+					placeholder={form?.errors?.name || 'bananas'}
 					class="w-full rounded-r-none input grow bg-base-200"
 				/>
-				<button class="rounded-l-none btn btn-square btn-primary">
+				<button formaction="?/new-item" class="rounded-l-none btn btn-square btn-primary">
 					<Plus class="size-6" />
 				</button>
-			</div>
+			</form>
 		</div>
 	{/if}
 </div>
