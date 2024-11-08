@@ -18,7 +18,7 @@ type FormResponse =
   | {};
 
 export const actions = {
-  default: async ({ request, locals }): Promise<FormResponse> => {
+  "new-list": async ({ request, locals }): Promise<FormResponse> => {
     if (!locals.authenticated) {
       return redirect(303, "/login");
     }

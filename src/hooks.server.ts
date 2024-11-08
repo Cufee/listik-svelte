@@ -1,3 +1,4 @@
+import { env } from "$env/dynamic/private";
 import { Database, newClient } from "$lib/server/db";
 import { error, type Handle, redirect } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
@@ -33,7 +34,7 @@ const csrf =
       is_form_content_type(event.request) &&
       !allowed_paths.includes(event.url.pathname);
 
-    if (forbidden) {
+    if (forbidden && env.NODE_ENV !== "development") {
       return error(
         403,
         `Cross-site ${event.request.method} form submissions are forbidden`,
