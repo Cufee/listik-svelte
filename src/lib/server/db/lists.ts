@@ -12,7 +12,16 @@ import {
   type ListMember,
   listMembers,
   lists,
+  type ListTag,
+  listTags,
 } from "./schema";
+
+export interface ListTagData {
+  name: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+}
 
 export class ListOperations {
   private db: Client;
@@ -97,14 +106,14 @@ export class ListOperations {
     return { ok: true, data: member.data };
   }
 
-  async get<I extends boolean>(
+  async get(
     listId: string,
-    withItems: I,
-  ): Promise<Result<I extends true ? List & { items: ListItem[] } : List>> {
+    include: { items?: true; tags?: true } = {},
+  ): Promise<Result<List & { items: ListItem[]; tags: ListTag[] }>> {
     const list = await databaseDo(() => {
       return this.db.query.lists.findFirst({
         where: eq(lists.id, listId),
-        with: withItems ? { items: true } : {},
+        with: include,
       });
     }, "failed to get from lists");
     if (!list.ok) {
@@ -114,9 +123,8 @@ export class ListOperations {
       return { ok: false, error: new DatabaseError("not found") };
     }
 
-    if (withItems) {
-      return { ok: true, data: list.data as any };
-    }
+    list.data.tags = list.data.tags ?? [];
+    list.data.items = list.data.items ?? [];
     return { ok: true, data: list.data as any };
   }
 
@@ -152,5 +160,65 @@ export class ListOperations {
           return list;
         });
     }, "failed to insert into lists or list_members");
+  }
+
+  async createTag(
+    userId: string,
+    listId: string,
+    data: ListTagData,
+  ): Promise<Result<ListTag>> {
+    const inserted = await databaseDo(() => {
+      return this.db
+        .insert(listTags)
+        .values({ ...data, listId, createdBy: userId })
+        .returning()
+        .execute();
+    }, "failed to insert into list_tags");
+    if (!inserted.ok) {
+      return inserted;
+    }
+    if (inserted.data.length !== 1) {
+      return { ok: false, error: IncorrectReturnsLength };
+    }
+    return { ok: true, data: inserted.data[0] };
+  }
+
+  async updateTag(
+    id: string,
+    data: Partial<ListTagData>,
+  ): Promise<Result<ListTag>> {
+    const updated = await databaseDo(() => {
+      return this.db
+        .update(listTags)
+        .set(data)
+        .where(eq(listTags.id, id))
+        .returning()
+        .execute();
+    }, "failed to insert into list_tags");
+    if (!updated.ok) {
+      return updated;
+    }
+    if (updated.data.length !== 1) {
+      return { ok: false, error: IncorrectReturnsLength };
+    }
+    return { ok: true, data: updated.data[0] };
+  }
+
+  async deleteTag(id: string): Promise<Result<null>> {
+    const deleted = await databaseDo(() => {
+      return this.db.delete(listTags).where(eq(listTags.id, id)).execute();
+    }, "failed to delete from list_tags");
+    if (!deleted.ok) {
+      return deleted;
+    }
+    return { ok: true, data: null };
+  }
+
+  async saveItem() {
+    //
+  }
+
+  async deleteItem() {
+    //
   }
 }

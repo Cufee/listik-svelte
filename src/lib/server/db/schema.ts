@@ -1,6 +1,7 @@
 import cuid from "cuid";
 import { type InferSelectModel, relations, sql } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import moment from "moment";
 
 export const users = sqliteTable("user", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
@@ -9,7 +10,7 @@ export const users = sqliteTable("user", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => new Date()),
+	).$onUpdateFn(() => moment().toDate()),
 
 	email: text("email").notNull(),
 	externalId: text("external_id").notNull().unique(),
@@ -39,7 +40,7 @@ export const sessions = sqliteTable("session", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => new Date()),
+	).$onUpdateFn(() => moment().toDate()),
 
 	userId: text("user_id").references(() => users.id).notNull(),
 	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
@@ -73,7 +74,7 @@ export const lists = sqliteTable("list", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => new Date()),
+	).$onUpdateFn(() => moment().toDate()),
 
 	ownerId: text("owner_id").references(() => users.id).notNull(),
 
@@ -94,6 +95,7 @@ export const listRelations = relations(lists, ({ one, many }) => ({
 	}),
 	members: many(listMembers),
 	items: many(listItems),
+	tags: many(listTags),
 }));
 
 export const listMembers = sqliteTable("list_member", {
@@ -103,7 +105,7 @@ export const listMembers = sqliteTable("list_member", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => new Date()),
+	).$onUpdateFn(() => moment().toDate()),
 
 	userId: text("user_id").references(() => users.id).notNull(),
 	listId: text("list_id").references(() => lists.id).notNull(),
@@ -134,7 +136,7 @@ export const listTags = sqliteTable("list_tag", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => new Date()),
+	).$onUpdateFn(() => moment().toDate()),
 
 	listId: text("list_id").references(() => lists.id).notNull(),
 	createdBy: text("created_by").references(() => users.id).notNull(),
@@ -168,7 +170,7 @@ export const listInvites = sqliteTable("list_invite", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => new Date()),
+	).$onUpdateFn(() => moment().toDate()),
 
 	createdBy: text("created_by").references(() => users.id).notNull(),
 	listId: text("list_id").references(() => lists.id).notNull(),
@@ -209,7 +211,7 @@ export const listItems = sqliteTable("list_item", {
 	),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
 		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => new Date()),
+	).$onUpdateFn(() => moment().toDate()),
 
 	createdBy: text("created_by").references(() => users.id).notNull(),
 	listId: text("list_id").references(() => lists.id).notNull(),

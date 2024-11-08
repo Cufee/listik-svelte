@@ -18,4 +18,21 @@
 			</a>
 		</div>
 	</div>
+	<div class="flex flex-col">
+		<div class="flex items-center justify-between gap-2">
+			<h1 class="text-lg">Categories</h1>
+			{#if data.list.ownerId === data.user.id}
+				<button class="btn btn-sm btn-ghost link">new</button>
+			{/if}
+		</div>
+		{#if data.list.tags.length === 0}
+			<span class="text-gray-400">This list does not have any categories yet</span>
+		{:else}
+			<div class="flex gap-1">
+				{#each data.list.tags as tag}
+					<button class="btn btn-dark">{tag.name}</button>
+				{/each}
+			</div>
+		{/if}
+	</div>
 </div>

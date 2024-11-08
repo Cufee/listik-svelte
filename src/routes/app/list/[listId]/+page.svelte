@@ -58,8 +58,10 @@
 
 	<div class="flex flex-col gap-2 grow">
 		{#if items.length === 0}
-			<span class="m-auto text-lg text-center text-gray-400">
-				use the input below to add a new item
+			<span class="p-4 text-lg text-center text-gray-400">
+				{mode === 'shopping'
+					? 'this list has no unfinished items'
+					: 'use the input below to add a new item'}
 			</span>
 		{/if}
 		{#each items as item}
@@ -75,10 +77,10 @@
 				<input
 					name="name"
 					type="text"
-					data-placeholder="bananas"
-					class="w-full rounded-r-none input grow bg-base-200"
 					minlength="3"
 					maxlength="32"
+					data-placeholder="bananas"
+					class="w-full rounded-r-none input grow bg-base-200"
 					placeholder={form?.errors?.name || 'bananas'}
 					class:input-error={!!form?.errors?.name}
 					value={form?.values?.name}
