@@ -66,7 +66,13 @@ export class ListOperations {
   }
 
   async create(
-    data: { ownerId: string; name: string; description: string },
+    data: {
+      ownerId: string;
+      name: string;
+      icon?: string;
+      color?: string;
+      description: string;
+    },
   ): Promise<Result<List>> {
     return databaseDo(() => {
       return this.db

@@ -18,41 +18,7 @@ type FormResponse =
   | {};
 
 export const actions = {
-  "redeem-invite": async ({ request, locals }): Promise<FormResponse> => {
-    if (!locals.authenticated) {
-      return redirect(303, "/login");
-    }
-
-    const form = parseForm(await request.formData());
-    if (!form.code) {
-      return fail(400, {
-        invalid: true,
-        errors: { code: "Invite code cannot be left blank" },
-      });
-    }
-
-    const listsCount = await locals.db.lists.visibleToUserCount(
-      locals.session.user.id,
-    );
-
-    // validate and redeem the code
-    if (form.code?.length < 5 || form.code?.length > 10) {
-      return fail(400, {
-        values: form,
-        invalid: true,
-        errors: { code: "Invalid or expired invite code" },
-      });
-    }
-
-    const listId = "some-id";
-    if (!listsCount.ok || listsCount.data === 0) {
-      return redirect(303, "/app/onboarding/how-to?continue=" + listId);
-    }
-
-    return redirect(303, "/app/list/" + listId);
-  },
-
-  "new-list": async ({ request, locals }): Promise<FormResponse> => {
+  default: async ({ request, locals }): Promise<FormResponse> => {
     if (!locals.authenticated) {
       return redirect(303, "/login");
     }
@@ -77,9 +43,6 @@ export const actions = {
       });
     }
 
-    const listsCount = await locals.db.lists.visibleToUserCount(
-      locals.session.user.id,
-    );
     const list = await locals.db.lists.create({
       name: form.name,
       icon: form.icon,
@@ -89,9 +52,6 @@ export const actions = {
     });
     if (!list.ok) {
       return error(500, "Failed to create a list");
-    }
-    if (!listsCount.ok || listsCount.data === 0) {
-      return redirect(303, "/app/onboarding/how-to?continue=" + list.data.id);
     }
 
     return redirect(303, "/app/list/" + list.data.id);
