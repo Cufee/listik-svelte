@@ -26,7 +26,7 @@
 					placeholder="lk-code"
 					class="join-item input input-bordered grow rounded-xl"
 				/>
-				<button formaction="?/redeem-invite" class="btn join-item z-10 btn-primary">Redeem</button>
+				<button formaction="?/redeem-invite" class="btn join-item z-10 btn-primary">redeem</button>
 			</div>
 			{#if form?.errors?.code}
 				<div class="label">
@@ -86,7 +86,7 @@
 				{/if}
 			</fieldset>
 			<button formaction="?/new-list" class="btn join-item z-10 btn-primary"
-				>Create your first list</button
+				>create your list</button
 			>
 		</form>
 	</div>

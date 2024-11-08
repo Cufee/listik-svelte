@@ -7,7 +7,7 @@
 
 <div class="flex flex-col gap-4">
 	<div class="flex flex-col">
-		<h1 class="text-lg font-bold">Profile Settings</h1>
+		<h1 class="text-lg font-bold">Settings</h1>
 		<div class="flex flex-col">
 			<div class="flex flex-row gap-1">
 				<span class="font-bold">Name</span>
