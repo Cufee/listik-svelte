@@ -5,19 +5,19 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<div class="flex flex-col gap-6 text-center items-center w-full max-w-xl m-auto">
+<div class="flex flex-col items-center w-full max-w-xl gap-6 m-auto text-center">
 	<span class="text-2xl font-bold"> Welcome to Listik! </span>
-	<div class="flex flex-col gap-2 items-center w-full">
-		<span class="text-md font-bold"> Use an invite code to join an existing list </span>
+	<div class="flex flex-col items-center w-full gap-2">
+		<span class="font-bold text-md"> Use an invite code to join an existing list </span>
 		<form
 			use:enhance
 			autocomplete="off"
-			class="form-control flex flex-col w-full"
+			class="flex flex-col w-full form-control"
 			id="invite-code-form"
 			method="POST"
 			action="?/redeem-invite"
 		>
-			<div class="form-control flex flex-row join">
+			<div class="flex flex-row form-control join">
 				<input
 					type="text"
 					name="code"
@@ -26,7 +26,7 @@
 					placeholder="lk-code"
 					class="join-item input input-bordered grow rounded-xl"
 				/>
-				<button formaction="?/redeem-invite" class="btn join-item z-10 btn-primary">redeem</button>
+				<button formaction="?/redeem-invite" class="z-10 btn join-item btn-primary">Redeem</button>
 			</div>
 			{#if form?.errors?.code}
 				<div class="label">
@@ -36,7 +36,7 @@
 		</form>
 	</div>
 	<div class="divider">OR</div>
-	<div class="flex flex-col gap-2 items-center w-full">
+	<div class="flex flex-col items-center w-full gap-2">
 		<div class="text-md">
 			<p class="font-bold">We can create a new list for you!</p>
 			<p>You will be able to adjust the settings and invite other users to your list later on</p>
@@ -44,14 +44,14 @@
 		<form
 			use:enhance
 			autocomplete="off"
-			class="form-control flex flex-col gap-2 w-full"
+			class="flex flex-col w-full gap-2 form-control"
 			method="POST"
 			action="?/new-list"
 		>
 			<fieldset class="flex flex-col gap-2" id="create-list-form">
 				<div class="form-control">
 					<div class="label">
-						<span class="label-text-alt text-lg">Name</span>
+						<span class="text-lg label-text-alt">Name</span>
 					</div>
 					<input
 						name="name"
@@ -68,8 +68,8 @@
 					</div>
 				{/if}
 				<div class="form-control">
-					<div class="label flex flex-row justify-between">
-						<span class="label-text-alt text-lg">Description</span>
+					<div class="flex flex-row justify-between label">
+						<span class="text-lg label-text-alt">Description</span>
 						<span class="badge badge-info">Optional</span>
 					</div>
 					<textarea
@@ -85,8 +85,8 @@
 					</div>
 				{/if}
 			</fieldset>
-			<button formaction="?/new-list" class="btn join-item z-10 btn-primary"
-				>create your list</button
+			<button formaction="?/new-list" class="z-10 btn join-item btn-primary"
+				>Create your list</button
 			>
 		</form>
 	</div>

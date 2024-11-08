@@ -5,7 +5,8 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<div class="w-full max-w-xl m-auto">
+<div class="flex-col w-full max-w-xl gap-4 m-auto clex">
+	<h1 class="text-xl text-center">Create a new list</h1>
 	<form
 		use:enhance
 		autocomplete="off"
@@ -50,6 +51,6 @@
 				</div>
 			{/if}
 		</fieldset>
-		<button formaction="?/new-list" class="z-10 btn join-item btn-primary">create</button>
+		<button formaction="?/new-list" class="z-10 btn join-item btn-primary">Create</button>
 	</form>
 </div>
