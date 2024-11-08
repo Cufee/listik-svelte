@@ -1,7 +1,18 @@
 import type { Result } from "$lib/result";
-import { count, eq } from "drizzle-orm";
-import { type Client, databaseDo, IncorrectReturnsLength } from ".";
-import { type List, listMembers, lists } from "./schema";
+import { and, count, eq } from "drizzle-orm";
+import {
+  type Client,
+  databaseDo,
+  DatabaseError,
+  IncorrectReturnsLength,
+} from ".";
+import {
+  type List,
+  type ListItem,
+  type ListMember,
+  listMembers,
+  lists,
+} from "./schema";
 
 export class ListOperations {
   private db: Client;
@@ -63,6 +74,50 @@ export class ListOperations {
       total += row.count;
     }
     return { ok: true, data: total };
+  }
+
+  async member(
+    userId: string,
+    listId: string,
+  ): Promise<Result<ListMember>> {
+    const member = await databaseDo(() => {
+      return this.db.query.listMembers.findFirst({
+        where: and(
+          eq(listMembers.userId, userId),
+          eq(listMembers.listId, listId),
+        ),
+      });
+    }, "failed to get from list_members");
+    if (!member.ok) {
+      return member;
+    }
+    if (!member.data) {
+      return { ok: false, error: new DatabaseError("not found") };
+    }
+    return { ok: true, data: member.data };
+  }
+
+  async get<I extends boolean>(
+    listId: string,
+    withItems: I,
+  ): Promise<Result<I extends true ? List & { items: ListItem[] } : List>> {
+    const list = await databaseDo(() => {
+      return this.db.query.lists.findFirst({
+        where: eq(lists.id, listId),
+        with: withItems ? { items: true } : {},
+      });
+    }, "failed to get from lists");
+    if (!list.ok) {
+      return list;
+    }
+    if (!list.data) {
+      return { ok: false, error: new DatabaseError("not found") };
+    }
+
+    if (withItems) {
+      return { ok: true, data: list.data as any };
+    }
+    return { ok: true, data: list.data as any };
   }
 
   async create(

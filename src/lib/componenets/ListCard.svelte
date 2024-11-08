@@ -6,9 +6,9 @@
 
 <a
 	href={`/app/list/${list.id}`}
-	class="flex flex-row p-4 gap-2 items-center bg-base-200 hover:bg-base-300 rounded-xl"
+	class="flex flex-row items-center gap-2 p-4 rounded-lg bg-base-200 hover:bg-base-300"
 >
-	<div class="flex flex-row grow gap-2 justify-between items-center">
+	<div class="flex flex-row items-center justify-between gap-2 grow">
 		<span class="text-lg">{list.name}</span>
 		{#if list.description}
 			<span class="text-gray-500">{list.description}</span>

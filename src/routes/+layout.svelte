@@ -8,9 +8,9 @@
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 </script>
 
-<main class="flex flex-col min-h-screen gap-2 p-2 mx-auto max-w-7xl underline-offset-4">
+<main class="flex flex-col max-w-3xl min-h-screen gap-2 p-2 mx-auto underline-offset-4">
 	<Navbar user={data.user} />
-	<div class="flex flex-col px-2">
+	<div class="flex flex-col px-2 grow">
 		{@render children()}
 	</div>
 </main>
