@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Back from '$lib/components/icons/Back.svelte';
+	import Plus from '$lib/components/icons/Plus.svelte';
 
 	let { data } = $props();
 </script>
@@ -22,7 +23,9 @@
 		<div class="flex items-center justify-between gap-2">
 			<h1 class="text-lg">Categories</h1>
 			{#if data.list.ownerId === data.user.id}
-				<button class="btn btn-sm btn-ghost link">new</button>
+				<button class="p-1.5 transition-colors bg-blue-400 rounded-lg hover:bg-blue-500">
+					<Plus class="size-4" />
+				</button>
 			{/if}
 		</div>
 		{#if data.list.tags.length === 0}

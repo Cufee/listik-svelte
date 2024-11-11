@@ -9,6 +9,7 @@ import {
 import {
   type List,
   type ListItem,
+  listItems,
   type ListMember,
   listMembers,
   lists,
@@ -214,11 +215,36 @@ export class ListOperations {
     return { ok: true, data: null };
   }
 
-  async saveItem() {
-    //
+  async saveItem(
+    data: Partial<typeof listItems.$inferInsert>,
+  ): Promise<Result<ListItem>> {
+    const result = await databaseDo(() => {
+      return this.db
+        .insert(listItems)
+        .values(data as typeof listItems.$inferInsert)
+        .onConflictDoUpdate({
+          target: listItems.id,
+          set: data,
+        })
+        .returning()
+        .execute();
+    }, "failed to insert into list_items");
+    if (!result.ok) {
+      return result;
+    }
+    if (result.data.length !== 1) {
+      return { ok: false, error: IncorrectReturnsLength };
+    }
+    return { ok: true, data: result.data[0] };
   }
 
-  async deleteItem() {
-    //
+  async deleteItem(id: string): Promise<Result<null>> {
+    const result = await databaseDo(() => {
+      return this.db.delete(listItems).where(eq(listItems.id, id)).execute();
+    }, "failed to delete from list_items");
+    if (!result.ok) {
+      return result;
+    }
+    return { ok: true, data: null };
   }
 }

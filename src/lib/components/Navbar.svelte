@@ -34,14 +34,14 @@
 	<div
 		class:invisible={!loading}
 		style={`width: ${progress}%`}
-		class="h-1 transition-[width] duration-200 ease-in rounded-r-full bg-primary"
+		class="h-1 transition-[width] duration-200 ease-in rounded-r-full bg-green-400"
 	></div>
 </div>
 
 <div class="p-0 navbar bg-base-100">
 	<div class="flex-1">
 		<a href={!!user ? '/app' : '/'} class="flex items-center">
-			<Logo class="size-10 text-primary" />
+			<Logo class="text-green-500 size-10" />
 		</a>
 	</div>
 

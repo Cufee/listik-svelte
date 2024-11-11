@@ -7,6 +7,8 @@
 <div class="flex flex-col gap-4">
 	<span class="text-xl text-center">A guide on using the app will be here at some point</span>
 	<div class="flex items-center justify-center">
-		<a href={data.redirect} class="btn btn-primary">continue to the app</a>
+		<a href={data.redirect} class="transition-colors bg-green-400 btn hover:bg-green-500">
+			continue to the app
+		</a>
 	</div>
 </div>

@@ -38,7 +38,7 @@
 			<div class="form-control">
 				<div class="flex flex-row justify-between label">
 					<span class="text-lg label-text-alt">Description</span>
-					<span class="badge badge-info">Optional</span>
+					<span class="py-4 bg-blue-300 badge">Optional</span>
 				</div>
 				<textarea
 					maxlength="80"
@@ -54,6 +54,9 @@
 				</div>
 			{/if}
 		</fieldset>
-		<button formaction="?/new-list" class="z-10 btn join-item btn-primary">Create</button>
+		<button
+			formaction="?/new-list"
+			class="z-10 transition-colors bg-green-400 btn join-item hover:bg-green-500">Create</button
+		>
 	</form>
 </div>

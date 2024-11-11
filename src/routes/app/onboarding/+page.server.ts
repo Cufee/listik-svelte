@@ -69,7 +69,6 @@ export const actions = {
       errors.description = "Description cannot be longer than 80 characters";
     }
     if (Object.keys(errors).length > 0) {
-      console.log(form);
       return fail(400, {
         errors,
         values: form,
