@@ -4,7 +4,7 @@
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import Settings from '$lib/components/icons/Settings.svelte';
 	import ShoppingCard from '$lib/components/icons/ShoppingCard.svelte';
-	import ListItem from '$lib/components/list-items/ListItem.svelte';
+	import ListItem from '$lib/components/ListItem/index.svelte';
 	import { untrack } from 'svelte';
 
 	let { data, form } = $props();
