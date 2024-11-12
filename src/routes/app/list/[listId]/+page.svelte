@@ -42,6 +42,7 @@
 	let mode: 'shopping' | 'edit' = $state(data.list.items.length === 0 ? 'edit' : 'shopping');
 	const toggleMode = () => {
 		mode = mode === 'shopping' ? 'edit' : 'shopping';
+		sortItems();
 	};
 
 	const clearError = (event: Event) => {
@@ -56,10 +57,13 @@
 
 		// Update the UI optimistically
 		const item = items[index];
-		items.splice(index, 1);
 		item.checkedAt = !!item.checkedAt ? null : new Date();
-		items.push(item);
-		sortItems();
+		if (mode === 'shopping') {
+			// push the item to the end
+			items.splice(index, 1);
+			items.push(item);
+			sortItems();
+		}
 
 		try {
 			// Update the item
