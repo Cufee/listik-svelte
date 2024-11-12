@@ -218,14 +218,25 @@ export class ListOperations {
   async saveItem(
     data: Partial<typeof listItems.$inferInsert>,
   ): Promise<Result<ListItem>> {
+    // Remove all unset keys to appease the drizzle gods
+    Object.keys(data).forEach((key) => {
+      if ((data as any)[key] === undefined) {
+        delete (data as any)[key];
+      }
+    });
+
     const result = await databaseDo(() => {
+      if (!data.id) {
+        return this.db
+          .insert(listItems)
+          .values(data as typeof listItems.$inferInsert)
+          .returning()
+          .execute();
+      }
       return this.db
-        .insert(listItems)
-        .values(data as typeof listItems.$inferInsert)
-        .onConflictDoUpdate({
-          target: listItems.id,
-          set: data,
-        })
+        .update(listItems)
+        .set(data as typeof listItems.$inferInsert)
+        .where(eq(listItems.id, data.id!))
         .returning()
         .execute();
     }, "failed to insert into list_items");

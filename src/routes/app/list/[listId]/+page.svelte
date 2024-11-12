@@ -10,9 +10,20 @@
 	let { data, form } = $props();
 
 	let items = $state(data.list.items);
+	const sortItems = () => {
+		items = items.sort((a, b) => {
+			// sort by checked/not checked and name
+			return (
+				(a?.checkedAt?.valueOf() ?? 0) - (b?.checkedAt?.valueOf() ?? 0) ||
+				a.name.localeCompare(b.name)
+			);
+		});
+	};
+	sortItems();
+
 	$effect(() => {
 		if (form?.success) {
-			if (form.action === 'new-item') {
+			if (form.action === 'save-item') {
 				// on form submit, add the new item to items array
 				// if this item already exists, remove it and push to end
 				untrack(() => {
@@ -39,10 +50,36 @@
 		target.placeholder = target.dataset.placeholder ?? '';
 	};
 
-	const checkItem = (id: string) => {
-		const item = items.find((i) => i.id === id);
-		if (!item) return;
+	const checkItem = async (id: string) => {
+		const index = items.findIndex((i) => i.id === id);
+		if (index === -1) return;
+
+		// Update the UI optimistically
+		const item = items[index];
+		items.splice(index, 1);
 		item.checkedAt = !!item.checkedAt ? null : new Date();
+		items.push(item);
+		sortItems();
+
+		try {
+			// Update the item
+			const response = await fetch('?/save-item', {
+				method: 'POST',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: `id=${item.id}&checked=${!!item.checkedAt}`
+			});
+			const data = await response.json();
+			if (data.type !== 'success') {
+				// TODO: Handle error - The UI should probably not revert at this point, a user is likely offline
+				console.error('failed to update a list item', data);
+				return;
+			}
+		} catch (error) {
+			console.error(error);
+		}
 	};
 </script>
 
@@ -87,7 +124,7 @@
 
 	{#if mode === 'edit'}
 		<div class="sticky bottom-0 flex justify-center w-full">
-			<form class="flex max-w-3xl grow" method="POST" action="?/new-item" use:enhance>
+			<form class="flex max-w-3xl grow" method="POST" action="?/save-item" use:enhance>
 				<input
 					name="name"
 					type="text"
@@ -101,7 +138,7 @@
 					oninput={clearError}
 				/>
 				<button
-					formaction="?/new-item"
+					type="submit"
 					class="transition-colors bg-green-400 rounded-l-none btn btn-square hover:bg-green-500"
 				>
 					<Plus class="size-6" />

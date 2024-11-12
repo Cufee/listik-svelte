@@ -50,7 +50,7 @@ export async function databaseDo<T>(
     const result = await operation();
     return { ok: true, data: result };
   } catch (error) {
-    logger.error(errorMessage, error);
+    logger.error(error, errorMessage);
     return {
       ok: false,
       error: new DatabaseError(errorMessage, error),

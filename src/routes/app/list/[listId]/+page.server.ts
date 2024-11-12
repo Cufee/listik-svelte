@@ -44,7 +44,7 @@ type FormResponse =
     }
   >
   | {
-    action: "new-item";
+    action: "save-item";
     success: true;
     item: ListItem;
   }
@@ -55,7 +55,7 @@ type FormResponse =
   };
 
 export const actions = {
-  "new-item": async ({ request, locals, params }): Promise<FormResponse> => {
+  "save-item": async ({ request, locals, params }): Promise<FormResponse> => {
     if (!locals.authenticated) {
       return redirect(303, "/login");
     }
@@ -71,48 +71,27 @@ export const actions = {
     }
 
     const form = parseForm(await request.formData());
-    const errors: Record<string, string> = {};
-    if (!form.name) {
-      errors.name = "item name cannot be blank";
-    }
-    if (form.name && (form.name.length < 3 || form.name.length > 32)) {
-      errors.name = "item name should be between 3 and 32 characters";
-    }
-    if (form.description?.length > 80) {
-      errors.description = "Description cannot be longer than 80 characters";
-    }
-    if (form.price?.length > 8) {
-      errors.price = "Price cannot be longer than 8 characters";
-    }
-    const quantity = parseInt(form.quantity) || 1;
-    if (quantity < 1 || quantity > 99) {
-      errors.quantity = "Quantity should be between 1 and 99";
-    }
-    if (Object.keys(errors).length > 0) {
-      return fail(400, {
-        errors,
-        values: form,
-        success: false,
-      });
-    }
-
-    const item = await upsertListItem(locals.db, locals.session.user.id, {
-      listId: params.listId,
-      name: form.name,
-      description: form.description,
-      quantity: quantity || 1,
-      price: form.price,
-    });
-
-    if (!item.ok) {
+    const result = await upsertListItem(
+      locals.db,
+      locals.session.user.id,
+      params.listId,
+      form,
+    );
+    if (!result.ok) {
       return fail(500, {
-        errors,
+        errors: {},
         values: form,
         success: false,
       });
     }
+    if (!result.data.success) {
+      return fail(400, {
+        values: form,
+        ...result.data,
+      });
+    }
 
-    return { success: true, item: item.data, action: "new-item" };
+    return { ...result.data, action: "save-item" };
   },
   "delete-item": async ({ request, locals, params }): Promise<FormResponse> => {
     if (!locals.authenticated) {
