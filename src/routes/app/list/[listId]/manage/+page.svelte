@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Back from '$lib/components/icons/Back.svelte';
+	import Crown from '$lib/components/icons/Crown.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
 
 	let { data } = $props();
@@ -20,15 +21,16 @@
 		</div>
 	</div>
 	<div class="flex flex-col">
-		<div class="flex items-center justify-between gap-2">
-			<h1 class="text-lg">Members</h1>
-		</div>
-		{#if data.list.members.length === 0}
-			<span class="text-gray-400">This list does not have any members yet</span>
-		{:else}
+		{#if data.list.members.length > 1}
+			<div class="flex items-center justify-between gap-2">
+				<h1 class="text-lg">Members</h1>
+			</div>
 			<div class="flex flex-wrap gap-2">
 				{#each data.list.members as member}
-					<div class="flex items-center gap-1 p-2 rounded-lg bg-base-200">
+					<div class="relative flex items-center gap-1 p-2 rounded-lg bg-base-200">
+						{#if data.list.ownerId === data.user.id}
+							<Crown class="absolute text-blue-400 -top-1.5 -right-1.5 size-4" />
+						{/if}
 						<img src={member.picture} class="w-5 h-5 rounded-full" alt={member.name} />
 						<span>{member.name}</span>
 					</div>
