@@ -10,5 +10,8 @@ export default {
   daisyui: {
     themes: ["emerald"],
   },
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
 }
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { navigating, page } from '$app/stores';
-	import type { User } from '$lib/server/db/schema';
+	import type { User } from '$lib/server/db/types';
 	import { untrack } from 'svelte';
 	import GoogleSignin from './GoogleSignin.svelte';
 	import Logo from './Logo.svelte';

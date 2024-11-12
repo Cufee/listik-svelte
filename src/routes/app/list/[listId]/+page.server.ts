@@ -1,4 +1,4 @@
-import type { ListItem } from "$lib/server/db/schema";
+import type { ListItem } from "$lib/server/db/types";
 import { parseForm } from "$lib/server/logic/forms";
 import { upsertListItem } from "$lib/server/logic/items";
 import {

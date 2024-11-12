@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { ListItem } from '$lib/server/db/schema';
+	import type { ListItem } from '$lib/server/db/types';
 	import Trash from '../icons/Trash.svelte';
 	import ItemCheckbox from './ItemCheckbox.svelte';
 

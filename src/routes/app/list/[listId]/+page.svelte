@@ -1,25 +1,16 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { autofocus } from '$lib/actions/autofocus';
 	import Pencil from '$lib/components/icons/Pencil.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import Settings from '$lib/components/icons/Settings.svelte';
 	import ShoppingCard from '$lib/components/icons/ShoppingCard.svelte';
 	import ListItem from '$lib/components/ListItem/index.svelte';
-	import { untrack } from 'svelte';
+	import { tick, untrack } from 'svelte';
+	import { itemStore } from './items.svelte.js';
 
 	let { data, form } = $props();
-
-	let items = $state(data.list.items);
-	const sortItems = () => {
-		items = items.sort((a, b) => {
-			// sort by checked/not checked and name
-			return (
-				(a?.checkedAt?.valueOf() ?? 0) - (b?.checkedAt?.valueOf() ?? 0) ||
-				a.name.localeCompare(b.name)
-			);
-		});
-	};
-	sortItems();
+	let items = itemStore(data.list.items);
 
 	$effect(() => {
 		if (form?.success) {
@@ -27,22 +18,25 @@
 				// on form submit, add the new item to items array
 				// if this item already exists, remove it and push to end
 				untrack(() => {
-					items = items.filter((i) => i.id !== form.item.id);
 					items.push(form.item);
 				});
 			}
 			if (form.action === 'delete-item') {
 				untrack(() => {
-					items = items.filter((i) => i.id !== form.item);
+					items.remove(form.item);
 				});
 			}
 		}
 	});
 
+	let newItemInput: HTMLInputElement | null = $state(null);
 	let mode: 'shopping' | 'edit' = $state(data.list.items.length === 0 ? 'edit' : 'shopping');
-	const toggleMode = () => {
+	const toggleMode = async () => {
 		mode = mode === 'shopping' ? 'edit' : 'shopping';
-		sortItems();
+		items.sort();
+
+		await tick();
+		newItemInput?.focus();
 	};
 
 	const clearError = (event: Event) => {
@@ -51,39 +45,8 @@
 		target.placeholder = target.dataset.placeholder ?? '';
 	};
 
-	const checkItem = async (id: string) => {
-		const index = items.findIndex((i) => i.id === id);
-		if (index === -1) return;
-
-		// Update the UI optimistically
-		const item = items[index];
-		item.checkedAt = !!item.checkedAt ? null : new Date();
-		if (mode === 'shopping') {
-			// push the item to the end
-			items.splice(index, 1);
-			items.push(item);
-			sortItems();
-		}
-
-		try {
-			// Update the item
-			const response = await fetch('?/save-item', {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: `id=${item.id}&checked=${!!item.checkedAt}`
-			});
-			const data = await response.json();
-			if (data.type !== 'success') {
-				// TODO: Handle error - The UI should probably not revert at this point, a user is likely offline
-				console.error('failed to update a list item', data);
-				return;
-			}
-		} catch (error) {
-			console.error(error);
-		}
+	const checkItem = (id: string) => {
+		items.check(id, mode === 'shopping');
 	};
 </script>
 
@@ -114,22 +77,37 @@
 	</div>
 
 	<div class="flex flex-col gap-2 grow">
-		{#if items.length === 0}
+		{#if items.all.length === 0}
 			<span class="p-4 text-lg text-center text-gray-400">
 				{mode === 'shopping'
 					? 'this list has no unfinished items'
 					: 'use the input below to add a new item'}
 			</span>
 		{/if}
-		{#each items as item}
-			<ListItem check={checkItem} {item} {mode} />
-		{/each}
+		{#if mode === 'shopping'}
+			{#each items.unchecked as item}
+				<ListItem check={checkItem} {item} {mode} />
+			{/each}
+			{#if items.checked.length > 0}
+				<div class="text-xs uppercase text-base-300 fontbold divider">Checked</div>
+			{/if}
+			{#each items.checked as item}
+				<ListItem check={checkItem} {item} {mode} />
+			{/each}
+		{:else}
+			{#each items.all as item}
+				<ListItem check={checkItem} {item} {mode} />
+			{/each}
+		{/if}
 	</div>
 
 	{#if mode === 'edit'}
 		<div class="sticky bottom-0 flex justify-center w-full">
 			<form class="flex max-w-3xl grow" method="POST" action="?/save-item" use:enhance>
 				<input
+					bind:this={newItemInput}
+					autofocus={true}
+					use:autofocus
 					name="name"
 					type="text"
 					minlength="3"
@@ -138,7 +116,7 @@
 					class="w-full rounded-r-none input grow bg-base-200"
 					placeholder={form?.errors?.name || 'bananas'}
 					class:input-error={!!form?.errors?.name}
-					value={form?.values?.name}
+					value={form?.values?.name ?? ''}
 					oninput={clearError}
 				/>
 				<button

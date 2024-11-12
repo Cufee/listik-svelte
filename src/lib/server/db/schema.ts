@@ -1,5 +1,5 @@
 import cuid from "cuid";
-import { type InferSelectModel, relations, sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import moment from "moment";
 
@@ -21,8 +21,6 @@ export const users = sqliteTable("user", {
 	emailIdx: index("user_email_idx").on(table.email),
 	externalIdIdx: index("user_external_id_idx").on(table.externalId),
 }));
-
-export interface User extends InferSelectModel<typeof users> {}
 
 export const userRelations = relations(users, ({ many }) => ({
 	sessions: many(sessions),
@@ -58,8 +56,6 @@ export const sessions = sqliteTable("session", {
 	userIdIdx: index("session_user_id_idx").on(table.userId),
 }));
 
-export interface Session extends InferSelectModel<typeof sessions> {}
-
 export const sessionRelations = relations(sessions, ({ one }) => ({
 	user: one(users, {
 		fields: [sessions.userId],
@@ -85,8 +81,6 @@ export const lists = sqliteTable("list", {
 }, (table) => ({
 	ownerIdIdx: index("list_owner_id_idx").on(table.ownerId),
 }));
-
-export interface List extends InferSelectModel<typeof lists> {}
 
 export const listRelations = relations(lists, ({ one, many }) => ({
 	owner: one(users, {
@@ -115,8 +109,6 @@ export const listMembers = sqliteTable("list_member", {
 	userIdIdx: index("list_member_user_id_idx").on(table.userId),
 	listIdIdx: index("list_member_list_id_idx").on(table.listId),
 }));
-
-export interface ListMember extends InferSelectModel<typeof listMembers> {}
 
 export const listMemberRelations = relations(listMembers, ({ one }) => ({
 	list: one(lists, {
@@ -149,8 +141,6 @@ export const listTags = sqliteTable("list_tag", {
 	createdByIdx: index("list_tag_created_by_idx").on(table.createdBy),
 	listIdIdx: index("list_tag_list_id_idx").on(table.listId),
 }));
-
-export interface ListTag extends InferSelectModel<typeof listTags> {}
 
 export const listTagRelations = relations(listTags, ({ one }) => ({
 	list: one(lists, {
@@ -190,8 +180,6 @@ export const listInvites = sqliteTable("list_invite", {
 		table.enabled,
 	),
 }));
-
-export interface ListInvite extends InferSelectModel<typeof listInvites> {}
 
 export const listInviteRelations = relations(listInvites, ({ one }) => ({
 	list: one(lists, {
@@ -235,8 +223,6 @@ export const listItems = sqliteTable("list_item", {
 	),
 	createdByIdx: index("list_item_created_by_idx").on(table.createdBy),
 }));
-
-export interface ListItem extends InferSelectModel<typeof listItems> {}
 
 export const listItemRelations = relations(listItems, ({ one }) => ({
 	list: one(lists, {

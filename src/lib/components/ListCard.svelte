@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { List } from '$lib/server/db/schema';
+	import type { List } from '$lib/server/db/types';
 
 	let { list }: { list: List } = $props();
 </script>

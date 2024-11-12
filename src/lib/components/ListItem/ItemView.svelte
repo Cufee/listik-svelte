@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ListItem } from '$lib/server/db/schema';
+	import type { ListItem } from '$lib/server/db/types';
 	import ItemCheckbox from './ItemCheckbox.svelte';
 
 	let { item, check }: { item: ListItem; check: (id: string) => void } = $props();

@@ -6,16 +6,8 @@ import {
   DatabaseError,
   IncorrectReturnsLength,
 } from ".";
-import {
-  type List,
-  type ListItem,
-  listItems,
-  type ListMember,
-  listMembers,
-  lists,
-  type ListTag,
-  listTags,
-} from "./schema";
+import { listItems, listMembers, lists, listTags } from "./schema";
+import type { List, ListItem, ListMember, ListTag } from "./types";
 
 export interface ListTagData {
   name: string;

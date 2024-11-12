@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ListItem } from '$lib/server/db/schema';
+	import type { ListItem } from '$lib/server/db/types';
 	import Check from '../icons/Check.svelte';
 	import Minus from '../icons/Minus.svelte';
 

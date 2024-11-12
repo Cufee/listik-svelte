@@ -7,7 +7,8 @@ import {
   DatabaseError,
   IncorrectReturnsLength,
 } from ".";
-import { type Session, sessions, type User } from "./schema";
+import { sessions } from "./schema";
+import type { Session, User } from "./types";
 
 const sessionDurationDays = 90;
 

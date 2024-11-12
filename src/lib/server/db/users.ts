@@ -5,7 +5,8 @@ import {
   DatabaseError,
   IncorrectReturnsLength,
 } from ".";
-import { type User, users } from "./schema";
+import { users } from "./schema";
+import type { User } from "./types";
 
 export class UserOperations {
   private db: Client;

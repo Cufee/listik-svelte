@@ -1,7 +1,7 @@
 import type { Result } from "$lib/result";
 import { createHash, randomBytes } from "crypto";
 import type { Database } from "../db";
-import type { Session } from "../db/schema";
+import type { Session } from "../db/types";
 
 export async function newSession(
   db: Database,

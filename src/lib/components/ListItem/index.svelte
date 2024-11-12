@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ListItem } from '$lib/server/db/schema';
+	import type { ListItem } from '$lib/server/db/types';
 	import ItemEdit from './ItemEdit.svelte';
 	import ItemView from './ItemView.svelte';
 
