@@ -9,6 +9,12 @@ import {
 import { listItems, listMembers, lists, listTags } from "./schema";
 import type { List, ListItem, ListMember, ListTag } from "./types";
 
+export type ExtendedList = List & {
+  items: ListItem[];
+  tags: ListTag[];
+  members: { id: string; name: string; picture: string | null }[];
+};
+
 export interface ListTagData {
   name: string;
   description?: string;
@@ -101,8 +107,10 @@ export class ListOperations {
 
   async get(
     listId: string,
-    include: { items?: true; tags?: true } = {},
-  ): Promise<Result<List & { items: ListItem[]; tags: ListTag[] }>> {
+    include: { items?: true; tags?: true; members?: true } = {},
+  ): Promise<
+    Result<ExtendedList>
+  > {
     const list = await databaseDo(() => {
       return this.db.query.lists.findFirst({
         where: eq(lists.id, listId),
@@ -116,9 +124,31 @@ export class ListOperations {
       return { ok: false, error: new DatabaseError("not found") };
     }
 
-    list.data.tags = list.data.tags ?? [];
-    list.data.items = list.data.items ?? [];
-    return { ok: true, data: list.data as any };
+    const extendedList: ExtendedList = { ...list.data, members: [] };
+    extendedList.tags = list.data.tags ?? [];
+    extendedList.items = list.data.items ?? [];
+
+    if (include.members) {
+      const memberIds = list.data.members.map((m) => m.userId);
+      const users = await databaseDo(() => {
+        return this.db.query.users.findMany({
+          where: (table, { inArray }) => inArray(table.id, memberIds),
+        }).execute();
+      }, "failed to get from users");
+      if (!users.ok) {
+        return users;
+      }
+      if (!users.data) {
+        return { ok: false, error: new DatabaseError("users not found") };
+      }
+      extendedList.members = users.data.map((u) => ({
+        picture: u.profilePicture,
+        name: u.displayName,
+        id: u.id,
+      }));
+    }
+
+    return { ok: true, data: extendedList };
   }
 
   async create(

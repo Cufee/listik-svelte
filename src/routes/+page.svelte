@@ -1,1 +1,14 @@
-<h1>Welcome to SvelteKit</h1>
+<div class="flex flex-col grow">
+	<div class="hero grow">
+		<div class="text-center hero-content">
+			<div class="max-w-md">
+				<h1 class="text-5xl font-bold">Welcome to Listik!</h1>
+				<p class="py-6">
+					This app is still in active development. We could add some AI slop placeholder text here,
+					but we respect you enough not to do that.
+				</p>
+				<a href="/login" class="btn btn-primary">Get Started</a>
+			</div>
+		</div>
+	</div>
+</div>

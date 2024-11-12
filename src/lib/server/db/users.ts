@@ -29,6 +29,21 @@ export class UserOperations {
     return { ok: true, data: user.data };
   }
 
+  async getMany(ids: string[]): Promise<Result<User[]>> {
+    const users = await databaseDo(() => {
+      return this.db.query.users.findMany({
+        where: (table, { inArray }) => inArray(table.id, ids),
+      }).execute();
+    }, "failed to get from users");
+    if (!users.ok) {
+      return users;
+    }
+    if (!users.data) {
+      return { ok: false, error: new DatabaseError("users not found") };
+    }
+    return { ok: true, data: users.data };
+  }
+
   async create(
     data: typeof users.$inferInsert,
   ): Promise<Result<User>> {

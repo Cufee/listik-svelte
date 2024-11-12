@@ -104,6 +104,7 @@
 	{#if mode === 'edit'}
 		<div class="sticky bottom-0 flex justify-center w-full">
 			<form class="flex max-w-3xl grow" method="POST" action="?/save-item" use:enhance>
+				<!-- svelte-ignore a11y_autofocus -->
 				<input
 					bind:this={newItemInput}
 					autofocus={true}

@@ -1,4 +1,4 @@
-import type { User } from "$lib/server/db/schema";
+import type { User } from "$lib/server/db/types";
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
@@ -11,7 +11,10 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     return redirect(307, "/app");
   }
 
-  const list = await locals.db.lists.get(member.data.listId, { tags: true });
+  const list = await locals.db.lists.get(member.data.listId, {
+    members: true,
+    tags: true,
+  });
   if (!list.ok) {
     return redirect(307, "/app");
   }

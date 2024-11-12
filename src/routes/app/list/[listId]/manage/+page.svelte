@@ -21,6 +21,45 @@
 	</div>
 	<div class="flex flex-col">
 		<div class="flex items-center justify-between gap-2">
+			<h1 class="text-lg">Members</h1>
+		</div>
+		{#if data.list.members.length === 0}
+			<span class="text-gray-400">This list does not have any members yet</span>
+		{:else}
+			<div class="flex flex-wrap gap-2">
+				{#each data.list.members as member}
+					<div class="flex items-center gap-1 p-2 rounded-lg bg-base-200">
+						<img src={member.picture} class="w-5 h-5 rounded-full" alt={member.name} />
+						<span>{member.name}</span>
+					</div>
+				{/each}
+			</div>
+		{/if}
+	</div>
+	{#if data.list.ownerId === data.user.id}
+		<div class="flex flex-col">
+			<div class="flex items-center justify-between gap-2">
+				<h1 class="text-lg">Invites</h1>
+				<button class="p-1.5 transition-colors bg-blue-400 rounded-lg hover:bg-blue-500">
+					<Plus class="size-4" />
+				</button>
+			</div>
+			<span class="text-gray-400">This list does not have any active invites</span>
+			<!-- {#if data.list.members.length === 0}
+			{:else}
+			<div class="flex flex-wrap gap-2">
+				{#each data.list.members as member}
+				<div class="flex items-center gap-1 p-2 rounded-lg bg-base-200">
+					<img src={member.picture} class="w-5 h-5 rounded-full" alt={member.name} />
+					<span>{member.name}</span>
+					</div>
+					{/each}
+					</div>
+					{/if} -->
+		</div>
+	{/if}
+	<div class="flex flex-col">
+		<div class="flex items-center justify-between gap-2">
 			<h1 class="text-lg">Categories</h1>
 			{#if data.list.ownerId === data.user.id}
 				<button class="p-1.5 transition-colors bg-blue-400 rounded-lg hover:bg-blue-500">
