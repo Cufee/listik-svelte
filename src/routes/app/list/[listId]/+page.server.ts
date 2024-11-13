@@ -7,7 +7,6 @@ import {
   fail,
   redirect,
 } from "@sveltejs/kit";
-import moment from "moment";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, params }) => {
@@ -25,11 +24,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   if (!listWithItems.ok) {
     return redirect(303, "/app");
   }
-
-  listWithItems.data.items = listWithItems.data.items.filter((i) =>
-    // Only return items that are not checked or were checked recently
-    !i.checkedAt || moment().diff(moment(i.checkedAt), "hours") < 6
-  );
 
   return { list: listWithItems.data };
 };

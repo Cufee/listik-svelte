@@ -4,6 +4,7 @@ import { AppError, type Result } from "$lib/result";
 
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+import { InviteOperations } from "./invites";
 import { ListOperations } from "./lists";
 import * as schema from "./schema";
 import { SessionOperations } from "./sessions";
@@ -15,12 +16,14 @@ export class Database {
   public db: Client;
   public lists: ListOperations;
   public users: UserOperations;
+  public invites: InviteOperations;
   public sessions: SessionOperations;
 
   constructor(db: Client) {
     this.db = db;
     this.lists = new ListOperations(db);
     this.users = new UserOperations(db);
+    this.invites = new InviteOperations(db);
     this.sessions = new SessionOperations(db);
   }
 }

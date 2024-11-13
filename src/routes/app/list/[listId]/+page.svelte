@@ -61,7 +61,7 @@
 		<div class="flex gap-2">
 			<button
 				title={mode === 'shopping' ? 'Edit List' : 'Shopping Mode'}
-				class="transition-colors bg-blue-400 hover:bg-blue-500 btn btn-square"
+				class="text-white transition-colors bg-blue-400 hover:bg-blue-500 btn btn-square"
 				onclick={toggleMode}
 			>
 				{#if mode === 'shopping'}
@@ -89,7 +89,7 @@
 				<ListItem check={checkItem} {item} {mode} />
 			{/each}
 			{#if items.checked.length > 0}
-				<div class="text-xs uppercase text-base-300 fontbold divider">Checked</div>
+				<div class="text-xs uppercase text-base-300 fontbold divider">Checked Recently</div>
 			{/if}
 			{#each items.checked as item}
 				<ListItem check={checkItem} {item} {mode} />

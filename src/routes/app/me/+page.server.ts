@@ -1,4 +1,4 @@
-import type { List, User } from "$lib/server/db/schema";
+import type { List, User } from "$lib/server/db/types";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async (

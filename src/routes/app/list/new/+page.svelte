@@ -27,7 +27,7 @@
 					aria-label="list name"
 					class="input input-bordered grow"
 					placeholder="my awesome list"
-					value={form?.values?.name}
+					value={form?.values?.name ?? ''}
 				/>
 			</div>
 			{#if form?.errors?.name}
@@ -45,7 +45,7 @@
 					name="description"
 					aria-label="list description"
 					class="textarea textarea-bordered"
-					placeholder="family shopping list">{form?.values?.description}</textarea
+					placeholder="family shopping list">{form?.values?.description ?? ''}</textarea
 				>
 			</div>
 			{#if form?.errors?.description}

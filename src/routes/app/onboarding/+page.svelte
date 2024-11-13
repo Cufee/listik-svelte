@@ -22,7 +22,7 @@
 					type="text"
 					name="code"
 					aria-label="invite code"
-					value={form?.values?.code}
+					value={form?.values?.code ?? ''}
 					placeholder="lk-code"
 					class="join-item input input-bordered grow rounded-xl"
 				/>
@@ -63,7 +63,7 @@
 						aria-label="list name"
 						class="input input-bordered grow"
 						placeholder="my awesome list"
-						value={form?.values?.name}
+						value={form?.values?.name ?? ''}
 					/>
 				</div>
 				{#if form?.errors?.name}
@@ -80,7 +80,7 @@
 						name="description"
 						aria-label="list description"
 						class="textarea textarea-bordered"
-						placeholder="family shoppoing list">{form?.values?.description}</textarea
+						placeholder="family shoppoing list">{form?.values?.description ?? ''}</textarea
 					>
 				</div>
 				{#if form?.errors?.description}

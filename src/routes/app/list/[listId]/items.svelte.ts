@@ -1,16 +1,17 @@
 import type { ListItem } from "$lib/server/db/types";
+import { notificationsStore } from "$lib/stores/notifications.svelte";
+import moment from "moment";
 
 let items = $state([] as ListItem[]);
+let notifications = notificationsStore();
 
 export function itemStore(initialState?: ListItem[]) {
-  if (initialState) items = initialState;
-
   const sort = () => {
     items = items.sort((a, b) => {
       // sort by checked/not checked and name
       return (
         (a?.checkedAt?.valueOf() ?? 0) - (b?.checkedAt?.valueOf() ?? 0) ||
-        a.name.localeCompare(b.name)
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
       );
     });
   };
@@ -30,8 +31,8 @@ export function itemStore(initialState?: ListItem[]) {
     item.checkedAt = !!item.checkedAt ? null : new Date();
     if (sort) items.sort();
 
+    // Update the item
     try {
-      // Update the item
       const response = await fetch("?/save-item", {
         method: "POST",
         credentials: "include",
@@ -42,21 +43,36 @@ export function itemStore(initialState?: ListItem[]) {
       });
       const data = await response.json();
       if (data.type !== "success") {
-        // TODO: Handle error - The UI should probably not revert at this point, a user is likely offline
+        notifications.push({
+          header: "Error",
+          "message": "Failed update a list item",
+          durationSec: 5,
+          level: "error",
+        });
         console.error("failed to update a list item", data);
         return;
       }
     } catch (error) {
+      // client is most likely offline
+      // TODO: some system to sync changes made
       console.error(error);
     }
   };
+
+  if (initialState) {
+    items = initialState;
+    sort();
+  }
 
   return {
     get all() {
       return items;
     },
     get checked() {
-      return items.filter((i) => !!i.checkedAt);
+      return items.filter((i) =>
+        // Only show recently checked items
+        !!i.checkedAt && moment().diff(moment(i.checkedAt), "hours") < 6
+      );
     },
     get unchecked() {
       return items.filter((i) => !i.checkedAt);

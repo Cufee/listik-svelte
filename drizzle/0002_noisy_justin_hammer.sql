@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `list_member_user_id_list_id_idx` ON `list_member` (`user_id`,`list_id`);

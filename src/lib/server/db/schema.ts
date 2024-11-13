@@ -1,6 +1,12 @@
 import cuid from "cuid";
 import { relations, sql } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+	index,
+	integer,
+	sqliteTable,
+	text,
+	unique,
+} from "drizzle-orm/sqlite-core";
 import moment from "moment";
 
 export const users = sqliteTable("user", {
@@ -106,6 +112,10 @@ export const listMembers = sqliteTable("list_member", {
 
 	permissions: text("permissions"),
 }, (table) => ({
+	userIdListIdIdx: unique("list_member_user_id_list_id_idx").on(
+		table.userId,
+		table.listId,
+	),
 	userIdIdx: index("list_member_user_id_idx").on(table.userId),
 	listIdIdx: index("list_member_list_id_idx").on(table.listId),
 }));

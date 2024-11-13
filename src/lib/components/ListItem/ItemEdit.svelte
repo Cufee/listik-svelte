@@ -21,7 +21,7 @@
 	<form method="POST" action="?/delete-item" use:enhance>
 		<input name="id" value={item.id} class="hidden" />
 		<button
-			class="flex items-center justify-center w-10 h-10 bg-red-400 rounded-lg hover:bg-red-500 text-error-content"
+			class="flex items-center justify-center w-10 h-10 text-white bg-red-400 rounded-lg hover:bg-red-500"
 		>
 			<Trash class="size-5" />
 		</button>

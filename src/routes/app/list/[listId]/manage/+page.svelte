@@ -42,7 +42,7 @@
 		<div class="flex flex-col">
 			<div class="flex items-center justify-between gap-2">
 				<h1 class="text-lg">Invites</h1>
-				<button class="p-1.5 transition-colors bg-blue-400 rounded-lg hover:bg-blue-500">
+				<button class="p-1.5 transition-colors bg-blue-400 rounded-lg hover:bg-blue-500 text-white">
 					<Plus class="size-4" />
 				</button>
 			</div>
@@ -64,7 +64,7 @@
 		<div class="flex items-center justify-between gap-2">
 			<h1 class="text-lg">Categories</h1>
 			{#if data.list.ownerId === data.user.id}
-				<button class="p-1.5 transition-colors bg-blue-400 rounded-lg hover:bg-blue-500">
+				<button class="p-1.5 transition-colors bg-blue-400 rounded-lg hover:bg-blue-500 text-white">
 					<Plus class="size-4" />
 				</button>
 			{/if}
