@@ -12,7 +12,7 @@
 <main class="flex flex-col max-w-3xl gap-2 p-2 mx-auto h-dvh underline-offset-4">
 	<Notifications />
 	<Navbar user={data.user} />
-	<div class="flex flex-col px-2 grow">
+	<div class="flex flex-col px-2 pb-2 grow">
 		{@render children()}
 	</div>
 </main>
