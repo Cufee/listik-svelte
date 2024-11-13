@@ -1,3 +1,4 @@
+import { PUBLIC_ORIGIN } from "$env/static/public";
 import { parseForm } from "$lib/server/logic/forms";
 import {
   type ActionFailure,
@@ -35,7 +36,8 @@ export const actions = {
       locals.session.user.id,
     );
 
-    if (form.code?.length < 8 || form.code?.length > 32) {
+    let code = form?.code?.replaceAll(`${PUBLIC_ORIGIN}/join/`, "") ?? "";
+    if (code.length < 8 || code.length > 32) {
       return fail(400, {
         values: form,
         invalid: true,
@@ -44,7 +46,7 @@ export const actions = {
     }
     const member = await locals.db.invites.redeem(
       locals.session.user.id,
-      form.code,
+      code,
     );
     if (!member.ok) {
       return fail(400, {
