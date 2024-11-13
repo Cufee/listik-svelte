@@ -35,8 +35,18 @@ export const actions = {
       locals.session.user.id,
     );
 
-    // validate and redeem the code
-    if (form.code?.length < 5 || form.code?.length > 10) {
+    if (form.code?.length < 8 || form.code?.length > 32) {
+      return fail(400, {
+        values: form,
+        invalid: true,
+        errors: { code: "Invalid or expired invite code" },
+      });
+    }
+    const member = await locals.db.invites.redeem(
+      locals.session.user.id,
+      form.code,
+    );
+    if (!member.ok) {
       return fail(400, {
         values: form,
         invalid: true,
@@ -44,12 +54,13 @@ export const actions = {
       });
     }
 
-    const listId = "some-id";
     if (!listsCount.ok || listsCount.data === 0) {
-      return redirect(303, "/app/onboarding/how-to?continue=" + listId);
+      return redirect(
+        303,
+        "/app/onboarding/how-to?continue=" + member.data.listId,
+      );
     }
-
-    return redirect(303, "/app/list/" + listId);
+    return redirect(303, "/app/list/" + member.data.listId);
   },
 
   "new-list": async ({ request, locals }): Promise<FormResponse> => {

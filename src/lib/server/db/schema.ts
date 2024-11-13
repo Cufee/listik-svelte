@@ -1,5 +1,5 @@
 import cuid from "cuid";
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
 	index,
 	integer,
@@ -11,12 +11,11 @@ import moment from "moment";
 
 export const users = sqliteTable("user", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
-	createAt: integer("create_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	),
-	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => moment().toDate()),
+	createdAt: integer("create_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate()).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate())
+		.$onUpdateFn(() => moment().toDate()).notNull(),
 
 	email: text("email").notNull(),
 	externalId: text("external_id").notNull().unique(),
@@ -39,12 +38,11 @@ export const userRelations = relations(users, ({ many }) => ({
 
 export const sessions = sqliteTable("session", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
-	createAt: integer("create_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	),
-	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => moment().toDate()),
+	createdAt: integer("create_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate()).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate())
+		.$onUpdateFn(() => moment().toDate()).notNull(),
 
 	userId: text("user_id").references(() => users.id).notNull(),
 	expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
@@ -71,12 +69,11 @@ export const sessionRelations = relations(sessions, ({ one }) => ({
 
 export const lists = sqliteTable("list", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
-	createAt: integer("create_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	),
-	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => moment().toDate()),
+	createdAt: integer("create_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate()).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate())
+		.$onUpdateFn(() => moment().toDate()).notNull(),
 
 	ownerId: text("owner_id").references(() => users.id).notNull(),
 
@@ -93,6 +90,7 @@ export const listRelations = relations(lists, ({ one, many }) => ({
 		fields: [lists.ownerId],
 		references: [users.id],
 	}),
+	invites: many(listInvites),
 	members: many(listMembers),
 	items: many(listItems),
 	tags: many(listTags),
@@ -100,12 +98,11 @@ export const listRelations = relations(lists, ({ one, many }) => ({
 
 export const listMembers = sqliteTable("list_member", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
-	createAt: integer("create_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	),
-	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => moment().toDate()),
+	createdAt: integer("create_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate()).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate())
+		.$onUpdateFn(() => moment().toDate()).notNull(),
 
 	userId: text("user_id").references(() => users.id).notNull(),
 	listId: text("list_id").references(() => lists.id).notNull(),
@@ -133,12 +130,11 @@ export const listMemberRelations = relations(listMembers, ({ one }) => ({
 
 export const listTags = sqliteTable("list_tag", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
-	createAt: integer("create_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	),
-	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => moment().toDate()),
+	createdAt: integer("create_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate()).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate())
+		.$onUpdateFn(() => moment().toDate()).notNull(),
 
 	listId: text("list_id").references(() => lists.id).notNull(),
 	createdBy: text("created_by").references(() => users.id).notNull(),
@@ -165,12 +161,11 @@ export const listTagRelations = relations(listTags, ({ one }) => ({
 
 export const listInvites = sqliteTable("list_invite", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
-	createAt: integer("create_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	),
-	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => moment().toDate()),
+	createdAt: integer("create_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate()).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate())
+		.$onUpdateFn(() => moment().toDate()).notNull(),
 
 	createdBy: text("created_by").references(() => users.id).notNull(),
 	listId: text("list_id").references(() => lists.id).notNull(),
@@ -204,12 +199,11 @@ export const listInviteRelations = relations(listInvites, ({ one }) => ({
 
 export const listItems = sqliteTable("list_item", {
 	id: text("id").primaryKey().$defaultFn(() => cuid()),
-	createAt: integer("create_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	),
-	updatedAt: integer("updated_at", { mode: "timestamp" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
-	).$onUpdateFn(() => moment().toDate()),
+	createdAt: integer("create_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate()).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" })
+		.$defaultFn(() => moment().toDate())
+		.$onUpdateFn(() => moment().toDate()).notNull(),
 
 	createdBy: text("created_by").references(() => users.id).notNull(),
 	listId: text("list_id").references(() => lists.id).notNull(),

@@ -22,6 +22,13 @@
       "when": 1731452438690,
       "tag": "0002_noisy_justin_hammer",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1731523065127,
+      "tag": "0003_lazy_catseye",
+      "breakpoints": true
     }
   ]
 }

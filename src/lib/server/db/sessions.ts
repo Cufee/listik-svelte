@@ -92,6 +92,18 @@ export class SessionOperations {
     }
     return { ok: true, data: result.data[0] };
   }
+
+  async expire(id: string): Promise<Result<null>> {
+    const result = await databaseDo(() => {
+      return this.db.update(sessions).set({ expiresAt: new Date(0) }).where(
+        eq(sessions.id, id),
+      ).execute();
+    }, "failed to update sessions");
+    if (!result.ok) {
+      return result;
+    }
+    return { ok: true, data: null };
+  }
 }
 
 function shouldRefreshSession(expiration: Date): boolean {

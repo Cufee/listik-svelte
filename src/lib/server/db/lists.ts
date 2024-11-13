@@ -7,12 +7,13 @@ import {
   IncorrectReturnsLength,
 } from ".";
 import { listItems, listMembers, lists, listTags } from "./schema";
-import type { List, ListItem, ListMember, ListTag } from "./types";
+import type { List, ListInvite, ListItem, ListMember, ListTag } from "./types";
 
 export type ExtendedList = List & {
-  items: ListItem[];
   tags: ListTag[];
-  members: { id: string; name: string; picture: string | null }[];
+  items: ListItem[];
+  invites: ListInvite[];
+  members: { id: string; name: string; picture: string | null; joined: Date }[];
 };
 
 export interface ListTagData {
@@ -107,7 +108,7 @@ export class ListOperations {
 
   async get(
     listId: string,
-    include: { items?: true; tags?: true; members?: true } = {},
+    include: { items?: true; tags?: true; members?: true; invites?: true } = {},
   ): Promise<
     Result<ExtendedList>
   > {
@@ -125,8 +126,9 @@ export class ListOperations {
     }
 
     const extendedList: ExtendedList = { ...list.data, members: [] };
-    extendedList.tags = list.data.tags ?? [];
+    extendedList.invites = list.data.invites ?? [];
     extendedList.items = list.data.items ?? [];
+    extendedList.tags = list.data.tags ?? [];
 
     if (include.members) {
       const memberIds = list.data.members.map((m) => m.userId);
@@ -143,6 +145,7 @@ export class ListOperations {
       }
       extendedList.members = users.data.map((u) => ({
         picture: u.profilePicture,
+        joined: u.createdAt,
         name: u.displayName,
         id: u.id,
       }));
@@ -275,6 +278,18 @@ export class ListOperations {
     const result = await databaseDo(() => {
       return this.db.delete(listItems).where(eq(listItems.id, id)).execute();
     }, "failed to delete from list_items");
+    if (!result.ok) {
+      return result;
+    }
+    return { ok: true, data: null };
+  }
+
+  async deleteMember(listId: string, userId: string): Promise<Result<null>> {
+    const result = await databaseDo(() => {
+      return this.db.delete(listMembers).where(
+        and(eq(listMembers.listId, listId), eq(listMembers.userId, userId)),
+      ).execute();
+    }, "failed to delete from list_members");
     if (!result.ok) {
       return result;
     }

@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
+
+	let { data } = $props();
 </script>
 
 <svelte:head>
 	<script src="https://accounts.google.com/gsi/client"></script>
 </svelte:head>
-<div class="flex flex-col justify-center items-center gap-4">
+<div class="flex flex-col items-center justify-center gap-4">
 	<h1 class="text-xl">Welcome to Listik!</h1>
 	<div>
 		<div
+			data-state={data.state}
 			id="g_id_onload"
 			data-client_id={env.PUBLIC_GOOGLE_CLIENT_ID}
 			data-context="signin"
@@ -18,7 +21,8 @@
 			data-itp_support="true"
 		></div>
 		<div
-			class="g_id_signin w-full"
+			data-state={data.state}
+			class="w-full g_id_signin"
 			data-type="standard"
 			data-shape="pill"
 			data-theme="outline"

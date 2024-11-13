@@ -10,6 +10,19 @@ export class InviteOperations {
     this.db = db;
   }
 
+  async listInvites(listId: string): Promise<Result<ListInvite[]>> {
+    return await databaseDo(() => {
+      return this.db.query.listInvites
+        .findMany({
+          where: and(
+            eq(listInvites.enabled, true),
+            eq(listInvites.listId, listId),
+            sql`${listInvites.useCount} < ${listInvites.useLimit}`,
+          ),
+        });
+    }, "failed to get from list_invites");
+  }
+
   async create(
     { userId, listId, code }: { userId: string; listId: string; code: string },
   ): Promise<Result<ListInvite>> {
@@ -45,7 +58,7 @@ export class InviteOperations {
             and(
               eq(listInvites.code, code),
               eq(listInvites.enabled, true),
-              sql`${listInvites.useCount.name} < ${listInvites.useLimit.name}`,
+              sql`${listInvites.useCount} < ${listInvites.useLimit}`,
             ),
           )
           .returning()

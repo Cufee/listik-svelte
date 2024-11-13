@@ -100,6 +100,5 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
   });
 
   // TODO: Update the user info in the background
-
-  return redirect(303, "/app");
+  return redirect(303, form.get("state")?.toString() || "/app");
 };

@@ -1,10 +1,39 @@
 <script lang="ts">
 	import Crown from '$lib/components/icons/Crown.svelte';
 	import Leave from '$lib/components/icons/Leave.svelte';
-	import Trash from '$lib/components/icons/Trash.svelte';
-	import type { PageData } from './$types';
+	import { notificationsStore } from '$lib/stores/notifications.svelte';
+	import { untrack } from 'svelte';
 
-	let { data }: { data: PageData } = $props();
+	let { data, form } = $props();
+	let lists = $state(data.lists);
+	let notifications = notificationsStore();
+
+	$effect(() => {
+		if (form?.success) {
+			if (form.action === 'leave-list') {
+				untrack(() => {
+					lists = lists.filter((l) => l.id !== form.list);
+					notifications.push({
+						level: 'info',
+						header: 'You left a list',
+						message: 'You will no longer have access to this list',
+						durationSec: 3
+					});
+				});
+			}
+		}
+		if (form?.success === false) {
+			untrack(() => {
+				lists = lists.filter((l) => l.id !== form.list);
+				notifications.push({
+					level: 'error',
+					header: 'Error',
+					message: form.message || 'An unknown error happened.',
+					durationSec: 3
+				});
+			});
+		}
+	});
 </script>
 
 <div class="flex flex-col gap-4">
@@ -39,17 +68,21 @@
 							<Crown class="text-blue-400 size-4" />
 						{/if}
 					</a>
-					<button
-						disabled
-						title={list.ownerId === data.user.id ? 'Delete List' : 'Leave List'}
-						class="flex items-center justify-center w-10 h-10 p-2 text-white bg-red-400 rounded-lg cursor-pointer hover:bg-red-500"
-					>
-						{#if list.ownerId === data.user.id}
-							<Trash class="size-5" />
-						{:else}
-							<Leave class="size-5" />
-						{/if}
-					</button>
+					{#if list.ownerId !== data.user.id}
+						<form method="POST" action="?/leave-list">
+							<input name="listId" value={list.id} hidden />
+							<button
+								type="submit"
+								title={list.ownerId === data.user.id ? 'Delete List' : 'Leave List'}
+								class="flex items-center justify-center w-10 h-10 p-2 text-white bg-red-400 rounded-lg cursor-pointer hover:bg-red-500"
+							>
+								<Leave class="size-5" />
+							</button>
+						</form>
+					{:else}
+						<!-- <Trash class="size-5" /> -->
+						<!-- TODO: Option to delete a list, need to update schema cascading on delete -->
+					{/if}
 				</div>
 			{/each}
 		</div>
