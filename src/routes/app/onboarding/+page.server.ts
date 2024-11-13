@@ -1,4 +1,4 @@
-import { PUBLIC_ORIGIN } from "$env/static/public";
+import { env } from "$env/dynamic/public";
 import { parseForm } from "$lib/server/logic/forms";
 import {
   type ActionFailure,
@@ -36,7 +36,7 @@ export const actions = {
       locals.session.user.id,
     );
 
-    let code = form?.code?.replaceAll(`${PUBLIC_ORIGIN}/join/`, "") ?? "";
+    let code = form?.code?.replaceAll(`${env.PUBLIC_ORIGIN}/join/`, "") ?? "";
     if (code.length < 8 || code.length > 32) {
       return fail(400, {
         values: form,

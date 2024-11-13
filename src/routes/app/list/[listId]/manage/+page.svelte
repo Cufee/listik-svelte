@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { PUBLIC_ORIGIN } from '$env/static/public';
+	import { env } from '$env/dynamic/public';
 	import Back from '$lib/components/icons/Back.svelte';
 	import Copy from '$lib/components/icons/Copy.svelte';
 	import Crown from '$lib/components/icons/Crown.svelte';
@@ -32,7 +32,7 @@
 	});
 
 	const copyInviteLink = (code: string) => {
-		navigator.clipboard.writeText(`${PUBLIC_ORIGIN}/join/${code}`);
+		navigator.clipboard.writeText(`${env.PUBLIC_ORIGIN}/join/${code}`);
 	};
 </script>
 
