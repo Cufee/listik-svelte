@@ -40,8 +40,9 @@
 
 <div class="p-0 navbar bg-base-100">
 	<div class="flex-1">
-		<a href={!!user ? '/app' : '/'} class="flex items-center">
-			<Logo class="text-green-500 size-10" />
+		<a href={!!user ? '/app' : '/'} class="flex items-center gap-0.5">
+			<Logo class="text-green-500 size-8" />
+			<span class="text-xl text-gray-400">Listik</span>
 		</a>
 	</div>
 
