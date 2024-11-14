@@ -41,7 +41,7 @@
 		<div class="flex flex-col overflow-hidden">
 			<h1 class="text-xl">{data.list.name}</h1>
 			{#if data.list.description}
-				<span class="break-words line-clamp-2">{data.list.description}</span>
+				<span class="text-gray-500 break-words line-clamp-2">{data.list.description}</span>
 			{/if}
 		</div>
 		<div class="flex gap-2">

@@ -55,7 +55,7 @@
 		<div class="flex flex-col overflow-hidden">
 			<h1 class="text-xl">{data.list.name}</h1>
 			{#if data.list.description}
-				<span class="break-words line-clamp-2">{data.list.description}</span>
+				<span class="text-gray-500 break-words line-clamp-2">{data.list.description}</span>
 			{/if}
 		</div>
 		<div class="flex gap-2">
@@ -104,7 +104,7 @@
 	{#if mode === 'edit'}
 		<div class="sticky bottom-0 flex justify-center w-full h-12">
 			<form
-				class="flex max-w-3xl overflow-hidden rounded-lg grow"
+				class="flex max-w-3xl overflow-hidden rounded-lg shadow-lg grow"
 				method="POST"
 				action="?/save-item"
 				use:enhance
@@ -112,10 +112,10 @@
 				<select
 					name="quantity"
 					size="2"
-					class="w-12 !outline-none text-center no-scrollbar rounded-none bg-base-300 focus:bg-base-300"
+					class="w-12 !outline-none text-center no-scrollbar rounded-none bg-base-200"
 				>
 					{#each { length: 99 } as _, i}
-						<option value={i + 1} selected={i === 0}>{i + 1}</option>
+						<option value={i + 1} selected={i === 0} class="checked:bg-base-300">{i + 1}</option>
 					{/each}
 				</select>
 
@@ -129,7 +129,7 @@
 					minlength="3"
 					maxlength="32"
 					data-placeholder="bananas"
-					class="w-full px-4 grow !outline-none bg-base-200 rounded-none"
+					class="w-full px-2 grow !outline-none bg-base-200 rounded-none"
 					class:placeholder:text-red-400={!!form?.errors?.name}
 					placeholder={form?.errors?.name || 'bananas'}
 					value={form?.values?.name ?? ''}
