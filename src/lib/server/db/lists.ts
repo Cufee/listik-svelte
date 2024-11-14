@@ -9,6 +9,13 @@ import {
 import { listItems, listMembers, lists, listTags } from "./schema";
 import type { List, ListInvite, ListItem, ListMember, ListTag } from "./types";
 
+export interface ItemsCategory {
+  name: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+}
+
 export type ExtendedList = List & {
   tags: ListTag[];
   items: ListItem[];
@@ -290,6 +297,74 @@ export class ListOperations {
         and(eq(listMembers.listId, listId), eq(listMembers.userId, userId)),
       ).execute();
     }, "failed to delete from list_members");
+    if (!result.ok) {
+      return result;
+    }
+    return { ok: true, data: null };
+  }
+
+  async createCategory(
+    userId: string,
+    listId: string,
+    data: ItemsCategory,
+  ): Promise<Result<ListTag>> {
+    const category = await databaseDo(() => {
+      return this.db
+        .insert(listTags)
+        .values({
+          ...data,
+          listId,
+          createdBy: userId,
+        })
+        .returning()
+        .execute();
+    }, "failed to insert into list_tags");
+    if (!category.ok) {
+      return category;
+    }
+    if (category.data.length !== 1) {
+      return { ok: false, error: IncorrectReturnsLength };
+    }
+    return { ok: true, data: category.data[0] };
+  }
+
+  async updateCategory(
+    id: string,
+    data: Partial<ItemsCategory>,
+  ): Promise<Result<ListTag>> {
+    // Remove all unset keys to appease the drizzle gods
+    Object.keys(data).forEach((key) => {
+      if ((data as any)[key] === undefined) {
+        delete (data as any)[key];
+      }
+    });
+
+    const category = await databaseDo(() => {
+      return this.db
+        .update(listTags)
+        .set(data)
+        .where(eq(listTags.id, id))
+        .returning()
+        .execute();
+    }, "failed to update in list_tags");
+    if (!category.ok) {
+      return category;
+    }
+    if (category.data.length !== 1) {
+      return { ok: false, error: IncorrectReturnsLength };
+    }
+    return { ok: true, data: category.data[0] };
+  }
+
+  async deleteCategory(
+    id: string,
+  ): Promise<Result<null>> {
+    const result = await databaseDo(() => {
+      return this.db
+        .delete(listTags)
+        .where(eq(listTags.id, id))
+        .execute();
+    }, "failed to update in list_tags");
     if (!result.ok) {
       return result;
     }

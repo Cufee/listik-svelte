@@ -41,7 +41,7 @@
 
 	const clearError = (event: Event) => {
 		const target = event.target as HTMLInputElement;
-		target.classList.remove('input-error');
+		target.classList.remove('placeholder:text-red-400');
 		target.placeholder = target.dataset.placeholder ?? '';
 	};
 
@@ -102,8 +102,23 @@
 	</div>
 
 	{#if mode === 'edit'}
-		<div class="sticky bottom-0 flex justify-center w-full">
-			<form class="flex max-w-3xl grow" method="POST" action="?/save-item" use:enhance>
+		<div class="sticky bottom-0 flex justify-center w-full h-12">
+			<form
+				class="flex max-w-3xl overflow-hidden rounded-lg grow"
+				method="POST"
+				action="?/save-item"
+				use:enhance
+			>
+				<select
+					name="quantity"
+					size="2"
+					class="w-12 !outline-none text-center no-scrollbar rounded-none bg-base-300 focus:bg-base-300"
+				>
+					{#each { length: 99 } as _, i}
+						<option value={i + 1} selected={i === 0}>{i + 1}</option>
+					{/each}
+				</select>
+
 				<!-- svelte-ignore a11y_autofocus -->
 				<input
 					bind:this={newItemInput}
@@ -114,9 +129,9 @@
 					minlength="3"
 					maxlength="32"
 					data-placeholder="bananas"
-					class="w-full rounded-r-none input grow bg-base-200"
+					class="w-full px-4 grow !outline-none bg-base-200 rounded-none"
+					class:placeholder:text-red-400={!!form?.errors?.name}
 					placeholder={form?.errors?.name || 'bananas'}
-					class:input-error={!!form?.errors?.name}
 					value={form?.values?.name ?? ''}
 					oninput={clearError}
 				/>
