@@ -38,10 +38,10 @@
 
 <div class="flex flex-col gap-4 grow">
 	<div class="flex flex-row justify-between gap-4 items-top">
-		<div class="flex flex-col">
+		<div class="flex flex-col overflow-hidden">
 			<h1 class="text-xl">{data.list.name}</h1>
 			{#if data.list.description}
-				<span class="break-words break-all line-clamp-2">{data.list.description}</span>
+				<span class="break-words line-clamp-2">{data.list.description}</span>
 			{/if}
 		</div>
 		<div class="flex gap-2">
