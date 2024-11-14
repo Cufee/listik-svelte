@@ -15,8 +15,11 @@
 			if (form.action === 'save-item') {
 				// on form submit, add the new item to items array
 				// if this item already exists, remove it and push to end
-				untrack(() => {
+				untrack(async () => {
 					items.push(form.item);
+
+					await tick();
+					window.scrollTo({ behavior: 'smooth', top: document.body.scrollHeight });
 				});
 			}
 			if (form.action === 'delete-item') {
@@ -96,8 +99,10 @@
 	</div>
 
 	{#if mode === 'edit'}
-		<div class="sticky bottom-0 flex justify-center w-full h-12">
-			<NewItemInput bind:this={newItemInput} values={form?.values} errors={form?.errors} />
+		<div class="sticky bottom-0 flex flex-col justify-center w-full py-2 bg-white">
+			<div class="w-full bg-white">
+				<NewItemInput bind:this={newItemInput} values={form?.values} errors={form?.errors} />
+			</div>
 		</div>
 	{/if}
 </div>

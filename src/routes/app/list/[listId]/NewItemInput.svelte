@@ -15,6 +15,7 @@
 	let input: HTMLInputElement | null = $state(null);
 	export const focus = () => {
 		input?.focus();
+		window.scrollTo({ behavior: 'smooth', top: document.body.scrollHeight });
 	};
 
 	let inputValue = $state(values?.name ?? '');
@@ -66,14 +67,13 @@
 		maxlength="32"
 		data-placeholder="bananas"
 		class="w-full grow !outline-none bg-base-200 rounded-none px-4"
-		class:placeholder:text-red-400={!!errors?.name}
 		placeholder={errors?.name || 'bananas'}
 		value={values?.name ?? ''}
 		oninput={clearError}
 	/>
 	<button
 		type="submit"
-		class="transition-colors bg-green-400 rounded-l-none btn btn-square hover:bg-green-500"
+		class="transition-colors bg-green-400 border-none rounded-l-none btn btn-square hover:bg-green-500"
 	>
 		<Plus class="size-6" />
 	</button>
