@@ -13,10 +13,12 @@
 			<ItemCheckbox {item} />
 		</button>
 
-		{#if (item.quantity ?? 1) > 1}
-			<span class="text-blue-500">{item.quantity} x</span>
-		{/if}
-		<span>{item.name}</span>
+		<div class="flex items-center gap-1">
+			{#if (item.quantity ?? -1) > 0}
+				<span class="text-blue-500">{item.quantity} x</span>
+			{/if}
+			<span>{item.name}</span>
+		</div>
 	</div>
 	<form method="POST" action="?/delete-item" use:enhance>
 		<input name="id" value={item.id} class="hidden" />

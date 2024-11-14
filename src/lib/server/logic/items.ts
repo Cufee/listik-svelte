@@ -1,6 +1,7 @@
 import { type Result } from "$lib/result";
 import type { Database } from "../db";
-import type { ListItem, listItems } from "../db/schema";
+import type { listItems } from "../db/schema";
+import type { ListItem } from "../db/types";
 
 type SaveItemResult = {
   errors: Record<string, string>;
@@ -29,9 +30,9 @@ export async function upsertListItem(
   if (form.price?.length > 8) {
     errors.price = "Price cannot be longer than 8 characters";
   }
-  const quantity = parseInt(form.quantity) || 1;
-  if (quantity < 1 || quantity > 99) {
-    errors.quantity = "Quantity should be between 1 and 99";
+  let quantity = parseInt(form.quantity) || -1;
+  if (quantity > Number.MAX_SAFE_INTEGER) {
+    quantity = 1;
   }
   if (Object.keys(errors).length > 0) {
     return { ok: true, data: { errors, success: false } };
@@ -42,7 +43,7 @@ export async function upsertListItem(
     id: form.id,
     name: form.name,
     price: form.price,
-    quantity: quantity || 1,
+    quantity: quantity,
     description: form.description,
     checkedAt: form.checked === "true" ? new Date() : null,
   };

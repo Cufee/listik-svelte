@@ -34,6 +34,8 @@
 	const copyInviteLink = (code: string) => {
 		navigator.clipboard.writeText(`${env.PUBLIC_ORIGIN}/join/${code}`);
 	};
+
+	let categoryModalOpen = $state(false);
 </script>
 
 <div class="flex flex-col gap-4 grow">
@@ -125,7 +127,10 @@
 		<div class="flex items-center justify-between gap-2">
 			<h1 class="text-lg">Item Categories</h1>
 			{#if data.list.ownerId === data.user.id}
-				<button class="p-1.5 transition-colors bg-blue-400 rounded-lg hover:bg-blue-500 text-white">
+				<button
+					class="p-1.5 transition-colors bg-blue-400 rounded-lg hover:bg-blue-500 text-white"
+					onclick={() => (categoryModalOpen = true)}
+				>
 					<Plus class="size-4" />
 				</button>
 			{/if}
@@ -141,3 +146,13 @@
 		{/if}
 	</div>
 </div>
+
+<dialog open={categoryModalOpen} class="modal modal-top md:modal-middle">
+	<div class="modal-box">
+		<h3 class="text-lg font-bold">Create a new category</h3>
+		<p class="py-4">Press ESC key or click outside to close</p>
+	</div>
+	<form method="dialog" class="bg-black bg-opacity-50 modal-backdrop">
+		<button onclick={() => (categoryModalOpen = false)}>close</button>
+	</form>
+</dialog>

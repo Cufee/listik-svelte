@@ -11,7 +11,7 @@
 >
 	<ItemCheckbox {item} />
 
-	{#if (item.quantity ?? 1) > 1}
+	{#if (item.quantity ?? -1) > 0}
 		<span class="text-blue-500">{item.quantity} x</span>
 	{/if}
 	<span>{item.name}</span>

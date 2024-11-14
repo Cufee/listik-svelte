@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { autofocus } from '$lib/actions/autofocus';
 	import Pencil from '$lib/components/icons/Pencil.svelte';
-	import Plus from '$lib/components/icons/Plus.svelte';
 	import Settings from '$lib/components/icons/Settings.svelte';
 	import ShoppingCard from '$lib/components/icons/ShoppingCard.svelte';
 	import ListItem from '$lib/components/ListItem/index.svelte';
 	import { tick, untrack } from 'svelte';
 	import { itemStore } from './items.svelte.js';
+	import NewItemInput from './NewItemInput.svelte';
 
 	let { data, form } = $props();
 	let items = itemStore(data.list.items);
@@ -29,7 +27,8 @@
 		}
 	});
 
-	let newItemInput: HTMLInputElement | null = $state(null);
+	let newItemInput: any = $state(null);
+
 	let mode: 'shopping' | 'edit' = $state(data.list.items.length === 0 ? 'edit' : 'shopping');
 	const toggleMode = async () => {
 		mode = mode === 'shopping' ? 'edit' : 'shopping';
@@ -37,12 +36,7 @@
 
 		await tick();
 		newItemInput?.focus();
-	};
-
-	const clearError = (event: Event) => {
-		const target = event.target as HTMLInputElement;
-		target.classList.remove('placeholder:text-red-400');
-		target.placeholder = target.dataset.placeholder ?? '';
+		newItemInput?.clearError();
 	};
 
 	const checkItem = (id: string) => {
@@ -103,45 +97,7 @@
 
 	{#if mode === 'edit'}
 		<div class="sticky bottom-0 flex justify-center w-full h-12">
-			<form
-				class="flex max-w-3xl overflow-hidden rounded-lg shadow-lg grow"
-				method="POST"
-				action="?/save-item"
-				use:enhance
-			>
-				<select
-					name="quantity"
-					size="2"
-					class="w-12 !outline-none text-center no-scrollbar rounded-none bg-base-200"
-				>
-					{#each { length: 99 } as _, i}
-						<option value={i + 1} selected={i === 0} class="checked:bg-base-300">{i + 1}</option>
-					{/each}
-				</select>
-
-				<!-- svelte-ignore a11y_autofocus -->
-				<input
-					bind:this={newItemInput}
-					autofocus={true}
-					use:autofocus
-					name="name"
-					type="text"
-					minlength="3"
-					maxlength="32"
-					data-placeholder="bananas"
-					class="w-full px-2 grow !outline-none bg-base-200 rounded-none"
-					class:placeholder:text-red-400={!!form?.errors?.name}
-					placeholder={form?.errors?.name || 'bananas'}
-					value={form?.values?.name ?? ''}
-					oninput={clearError}
-				/>
-				<button
-					type="submit"
-					class="transition-colors bg-green-400 rounded-l-none btn btn-square hover:bg-green-500"
-				>
-					<Plus class="size-6" />
-				</button>
-			</form>
+			<NewItemInput bind:this={newItemInput} values={form?.values} errors={form?.errors} />
 		</div>
 	{/if}
 </div>
