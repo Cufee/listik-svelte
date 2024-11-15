@@ -68,7 +68,7 @@
 			{#each data.lists as list}
 				<div class="flex flex-row gap-1">
 					<a
-						href={`/app/list/${list.id}`}
+						href={`/app/list/${list.id}/manage`}
 						class="flex flex-row items-center w-full gap-2 px-3 py-2 overflow-hidden rounded-lg bg-base-200 hover:bg-base-300 grow"
 					>
 						<div
