@@ -1,48 +1,81 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { deserialize } from '$app/forms';
 	import { autofocus } from '$lib/actions/autofocus';
-	import Plus from '$lib/components/icons/Plus.svelte';
-	import { onMount, untrack } from 'svelte';
+	import Enter from '$lib/components/icons/Enter.svelte';
+	import type { ActionResult } from '@sveltejs/kit';
+	import { onMount, tick } from 'svelte';
+	import type { ActionData } from './$types';
+	import { itemStore } from './items.svelte';
 
-	let {
-		errors,
-		values
-	}: {
-		errors?: Record<string, string>;
-		values?: Record<string, string>;
-	} = $props();
+	let items = itemStore();
 
 	let input: HTMLInputElement | null = $state(null);
-	export const focus = () => {
-		input?.focus();
-		window.scrollTo({ behavior: 'smooth', top: document.body.scrollHeight });
-	};
-
-	let inputValue = $state(values?.name ?? '');
+	let values: Record<string, string> = $state({});
+	let errors: Record<string, string> = $state({});
 	export const clearError = () => {
-		inputValue = '';
+		errors = {};
 		if (!input) return;
 
 		input.placeholder = 'banana';
 		input.classList.remove('placeholder:text-red-400');
 	};
-	$effect(() => {
-		if (values?.name) {
-			untrack(() => {
-				inputValue = values.name;
-			});
-		}
-	});
 	onMount(() => {
 		clearError();
 	});
+
+	let form: HTMLFormElement | null = $state(null);
+	async function handleSubmit(event: Event) {
+		event.preventDefault();
+		if (!form) return;
+		input?.focus();
+
+		if (!values.name || values.name.length < 3) {
+			errors.name = 'input too short';
+			return;
+		}
+
+		const data = new FormData(form);
+		const response = await fetch(form.action, {
+			method: 'POST',
+			body: data
+		});
+
+		const result: ActionResult = deserialize(await response.text());
+		if (result.type === 'failure') {
+			const data = result.data as ActionData;
+			errors = data?.errors || {};
+			values = data?.values || {};
+			return;
+		}
+		if (result.type === 'success') {
+			const data = result.data as ActionData;
+			errors = {};
+			values = {};
+
+			switch (data?.action) {
+				case 'save-item':
+					items.push(data.item);
+					await tick();
+					window.scrollTo({ behavior: 'smooth', top: document.body.scrollHeight });
+					break;
+
+				case 'delete-item':
+					items.remove(data.item);
+					break;
+
+				default:
+					break;
+			}
+		}
+	}
 </script>
 
 <form
-	class="flex max-w-3xl overflow-hidden rounded-lg grow bg-base-200"
 	method="POST"
 	action="?/save-item"
-	use:enhance
+	class="flex items-center h-12 max-w-3xl px-4 overflow-hidden rounded-lg grow bg-base-200"
+	onsubmit={handleSubmit}
+	bind:this={form}
 >
 	<!-- <select
 		name="quantity"
@@ -58,23 +91,18 @@
 
 	<!-- svelte-ignore a11y_autofocus -->
 	<input
-		bind:this={input}
-		autofocus={true}
-		use:autofocus
 		name="name"
 		type="text"
-		minlength="3"
+		minlength="1"
 		maxlength="32"
-		data-placeholder="bananas"
-		class="w-full grow !outline-none bg-base-200 rounded-none px-4"
-		placeholder={errors?.name || 'bananas'}
-		value={values?.name ?? ''}
+		placeholder="bananas"
+		class="w-full grow !outline-none bg-transparent rounded-none placeholder:text-gray-400"
+		bind:value={values.name}
 		oninput={clearError}
+		bind:this={input}
+		use:autofocus
 	/>
-	<button
-		type="submit"
-		class="transition-colors bg-green-400 border-none rounded-l-none btn btn-square hover:bg-green-500"
-	>
-		<Plus class="size-6" />
-	</button>
+	<span class:text-gray-400={!errors.name} class:text-rose-300={errors.name}>
+		<Enter class="size-6" />
+	</span>
 </form>

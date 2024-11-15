@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import type { ListItem } from '$lib/server/db/types';
 	import Trash from '../icons/Trash.svelte';
 	import ItemCheckbox from './ItemCheckbox.svelte';
 
-	let { item, check }: { item: ListItem; check: (id: string) => void } = $props();
+	let {
+		item,
+		check,
+		remove
+	}: { item: ListItem; check: (id: string) => void; remove: (id: string) => void } = $props();
 </script>
 
 <div class="flex items-center gap-1">
@@ -20,12 +23,11 @@
 			<span>{item.name}</span>
 		</div>
 	</div>
-	<form method="POST" action="?/delete-item" use:enhance>
-		<input name="id" value={item.id} class="hidden" />
-		<button
-			class="flex items-center justify-center w-10 h-10 text-white bg-red-400 rounded-lg hover:bg-red-500"
-		>
-			<Trash class="size-5" />
-		</button>
-	</form>
+
+	<button
+		onclick={() => remove(item.id)}
+		class="flex items-center justify-center w-10 h-10 text-white bg-red-400 rounded-lg hover:bg-red-500"
+	>
+		<Trash class="size-5" />
+	</button>
 </div>

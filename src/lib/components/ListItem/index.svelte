@@ -6,16 +6,18 @@
 	let {
 		item,
 		mode,
-		check
+		check,
+		remove
 	}: {
 		item: ListItem;
 		mode: 'shopping' | 'edit';
 		check: (id: string) => void;
+		remove: (id: string) => void;
 	} = $props();
 </script>
 
 {#if mode === 'shopping'}
 	<ItemView {item} {check} />
 {:else}
-	<ItemEdit {item} {check} />
+	<ItemEdit {item} {check} {remove} />
 {/if}

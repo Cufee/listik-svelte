@@ -21,14 +21,17 @@ export async function upsertListItem(
   if (!form.id && !form.name) {
     errors.name = "item name cannot be blank";
   }
-  if (form.name && (form.name.length < 3 || form.name.length > 32)) {
-    errors.name = "item name should be between 3 and 32 characters";
+  if (form.name && form.name.length < 3) {
+    errors.name = "item name should be at least 3 characters";
+  }
+  if (form.name && form.name.length > 32) {
+    errors.name = "item name should be at most 32 characters";
   }
   if (form.description?.length > 80) {
-    errors.description = "Description cannot be longer than 80 characters";
+    errors.description = "description cannot be longer than 80 characters";
   }
   if (form.price?.length > 8) {
-    errors.price = "Price cannot be longer than 8 characters";
+    errors.price = "price cannot be longer than 8 characters";
   }
   let quantity = parseInt(form.quantity) || -1;
   if (quantity > Number.MAX_SAFE_INTEGER) {

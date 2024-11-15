@@ -19,8 +19,36 @@ export function itemStore(initialState?: ListItem[]) {
     items = items.filter((i) => i.id !== item.id);
     items.push(item);
   };
-  const remove = (id: string) => {
+  const remove = async (id: string) => {
+    // Update the UI optimistically
     items = items.filter((i) => i.id !== id);
+
+    // Update the item
+    try {
+      const response = await fetch("?/delete-item", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `id=${id}`,
+      });
+      const data = await response.json();
+      if (data.type !== "success") {
+        notifications.push({
+          header: "Error",
+          "message": "Failed delete a list item",
+          durationSec: 5,
+          level: "error",
+        });
+        console.error("failed to delete a list item", data);
+        return;
+      }
+    } catch (error) {
+      // client is most likely offline
+      // TODO: some system to sync changes made
+      console.error(error);
+    }
   };
 
   const check = async (id: string, sort: boolean) => {
@@ -67,6 +95,11 @@ export function itemStore(initialState?: ListItem[]) {
   return {
     get all() {
       return items;
+    },
+    get active() {
+      return items.filter((i) =>
+        !i.checkedAt || moment().diff(moment(i.checkedAt), "hours") < 6
+      );
     },
     get checked() {
       return items.filter((i) =>

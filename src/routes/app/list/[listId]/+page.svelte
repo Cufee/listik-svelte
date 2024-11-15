@@ -3,43 +3,17 @@
 	import Settings from '$lib/components/icons/Settings.svelte';
 	import ShoppingCard from '$lib/components/icons/ShoppingCard.svelte';
 	import ListItem from '$lib/components/ListItem/index.svelte';
-	import { tick, untrack } from 'svelte';
 	import { itemStore } from './items.svelte.js';
 	import NewItemInput from './NewItemInput.svelte';
 
-	let { data, form } = $props();
+	let { data } = $props();
 	let items = itemStore(data.list.items);
 
-	$effect(() => {
-		if (form?.success) {
-			if (form.action === 'save-item') {
-				// on form submit, add the new item to items array
-				// if this item already exists, remove it and push to end
-				untrack(async () => {
-					items.push(form.item);
+	let mode: 'shopping' | 'edit' = $state(items.active.length === 0 ? 'edit' : 'shopping');
 
-					await tick();
-					window.scrollTo({ behavior: 'smooth', top: document.body.scrollHeight });
-				});
-			}
-			if (form.action === 'delete-item') {
-				untrack(() => {
-					items.remove(form.item);
-				});
-			}
-		}
-	});
-
-	let newItemInput: any = $state(null);
-
-	let mode: 'shopping' | 'edit' = $state(data.list.items.length === 0 ? 'edit' : 'shopping');
 	const toggleMode = async () => {
 		mode = mode === 'shopping' ? 'edit' : 'shopping';
 		items.sort();
-
-		await tick();
-		newItemInput?.focus();
-		newItemInput?.clearError();
 	};
 
 	const checkItem = (id: string) => {
@@ -48,12 +22,9 @@
 </script>
 
 <div class="flex flex-col gap-4 grow">
-	<div class="flex flex-row justify-between gap-4 items-top">
+	<div class="flex flex-row items-center justify-between gap-4">
 		<div class="flex flex-col overflow-hidden">
 			<h1 class="text-xl">{data.list.name}</h1>
-			{#if data.list.description}
-				<span class="text-gray-500 break-words line-clamp-2">{data.list.description}</span>
-			{/if}
 		</div>
 		<div class="flex gap-2">
 			<button
@@ -74,34 +45,51 @@
 	</div>
 
 	<div class="flex flex-col gap-2 grow">
-		{#if items.all.length === 0}
-			<span class="p-4 text-lg text-center text-gray-400">
-				{mode === 'shopping'
-					? 'this list has no unfinished items'
-					: 'use the input below to add a new item'}
-			</span>
-		{/if}
 		{#if mode === 'shopping'}
+			{#if items.active.length === 0}
+				<div
+					class="flex flex-col items-center justify-center pb-16 text-lg text-center text-gray-400 grow"
+				>
+					{#if items.all.length === 0}
+						<span> this list does not have any items added yet </span>
+						<span>
+							use <button class="link" onclick={() => (mode = 'edit')}>edit mode</button> to add your
+							first item
+						</span>
+					{:else}
+						<span> all done! there are no active items in this list </span>
+					{/if}
+				</div>
+			{/if}
+
 			{#each items.unchecked as item}
-				<ListItem check={checkItem} {item} {mode} />
+				<ListItem remove={items.remove} check={checkItem} {item} {mode} />
 			{/each}
-			{#if items.checked.length > 0}
-				<div class="text-xs uppercase text-base-300 fontbold divider">Checked Recently</div>
+			{#if items.checked.length > 0 && items.unchecked.length > 0}
+				<div class="text-xs uppercase bg-white text-base-300 fontbold divider">
+					Checked Recently
+				</div>
 			{/if}
 			{#each items.checked as item}
-				<ListItem check={checkItem} {item} {mode} />
+				<ListItem remove={items.remove} check={checkItem} {item} {mode} />
 			{/each}
 		{:else}
+			{#if items.all.length === 0}
+				<div class="flex items-center justify-center text-lg text-center text-gray-400 grow">
+					<span> use the input below to add your first item </span>
+				</div>
+			{/if}
+
 			{#each items.all as item}
-				<ListItem check={checkItem} {item} {mode} />
+				<ListItem remove={items.remove} check={checkItem} {item} {mode} />
 			{/each}
 		{/if}
 	</div>
 
 	{#if mode === 'edit'}
-		<div class="sticky bottom-0 flex flex-col justify-center w-full py-2 bg-white">
+		<div class="sticky bottom-0 flex flex-col justify-center w-full py-4 bg-white">
 			<div class="w-full bg-white">
-				<NewItemInput bind:this={newItemInput} values={form?.values} errors={form?.errors} />
+				<NewItemInput />
 			</div>
 		</div>
 	{/if}

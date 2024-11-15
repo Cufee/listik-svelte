@@ -39,12 +39,9 @@
 </script>
 
 <div class="flex flex-col gap-4 grow">
-	<div class="flex flex-row justify-between gap-4 items-top">
+	<div class="flex flex-row items-center justify-between gap-4">
 		<div class="flex flex-col overflow-hidden">
 			<h1 class="text-xl">{data.list.name}</h1>
-			{#if data.list.description}
-				<span class="text-gray-500 break-words line-clamp-2">{data.list.description}</span>
-			{/if}
 		</div>
 		<div class="flex gap-2">
 			<a href={`/app/list/${data.list.id}`} class="btn btn-dark btn-square">
@@ -52,6 +49,9 @@
 			</a>
 		</div>
 	</div>
+	{#if data.list.description}
+		<span class="text-gray-500 break-words">{data.list.description}</span>
+	{/if}
 	<div class="flex flex-col gap-2">
 		<div class="flex items-center justify-between gap-2">
 			<h1 class="text-lg">Members</h1>
