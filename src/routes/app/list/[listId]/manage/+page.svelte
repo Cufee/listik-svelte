@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { env } from '$env/dynamic/public';
-	import Back from '$lib/components/icons/Back.svelte';
 	import Copy from '$lib/components/icons/Copy.svelte';
 	import Crown from '$lib/components/icons/Crown.svelte';
 	import Join from '$lib/components/icons/Join.svelte';
+	import List from '$lib/components/icons/List.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import Trash from '$lib/components/icons/Trash.svelte';
 	import { notificationsStore } from '$lib/stores/notifications.svelte.js';
@@ -45,7 +45,7 @@
 		</div>
 		<div class="flex gap-2">
 			<a href={`/app/list/${data.list.id}`} class="btn btn-dark btn-square">
-				<Back class="size-6" />
+				<List class="size-6" />
 			</a>
 		</div>
 	</div>
