@@ -23,7 +23,7 @@
 </script>
 
 <div class="flex flex-col gap-4 grow">
-	<div class="flex flex-row items-center justify-between gap-4">
+	<div class="flex flex-row items-end justify-between gap-4">
 		<div class="flex flex-col overflow-hidden">
 			<h1 class="text-xl">{data.list.name}</h1>
 		</div>
