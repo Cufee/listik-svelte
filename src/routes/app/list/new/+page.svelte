@@ -5,7 +5,7 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<div class="flex-col w-full max-w-xl gap-4 m-auto clex">
+<div class="flex flex-col justify-center w-full max-w-sm gap-4 mx-auto">
 	<h1 class="text-xl text-center">Create a new list</h1>
 	<form
 		use:enhance

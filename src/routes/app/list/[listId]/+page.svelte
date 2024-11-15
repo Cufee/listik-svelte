@@ -1,4 +1,5 @@
 <script lang="ts">
+	import RandomEmoji from '$lib/components/icons/emoji/RandomEmoji.svelte';
 	import Pencil from '$lib/components/icons/Pencil.svelte';
 	import Settings from '$lib/components/icons/Settings.svelte';
 	import ShoppingCard from '$lib/components/icons/ShoppingCard.svelte';
@@ -9,7 +10,7 @@
 	let { data } = $props();
 	let items = itemStore(data.list.items);
 
-	let mode: 'shopping' | 'edit' = $state(items.active.length === 0 ? 'edit' : 'shopping');
+	let mode: 'shopping' | 'edit' = $state(items.all.length === 0 ? 'edit' : 'shopping');
 
 	const toggleMode = async () => {
 		mode = mode === 'shopping' ? 'edit' : 'shopping';
@@ -57,15 +58,23 @@
 							first item
 						</span>
 					{:else}
-						<span> all done! there are no active items in this list </span>
+						<RandomEmoji class="p-2 size-32" />
+						<span class="text-2xl"> all done! </span>
+						<span> there are no active items in this list </span>
+						<button class="p-2 link" onclick={() => (mode = 'edit')}>view all items</button>
 					{/if}
+				</div>
+			{:else if items.unchecked.length === 0}
+				<div class="flex flex-col items-center justify-center text-gray-400">
+					<RandomEmoji class="size-16" />
+					<span class="text-xl"> you're done! </span>
 				</div>
 			{/if}
 
 			{#each items.unchecked as item}
 				<ListItem remove={items.remove} check={checkItem} {item} {mode} />
 			{/each}
-			{#if items.checked.length > 0 && items.unchecked.length > 0}
+			{#if items.checked.length > 0}
 				<div class="text-xs uppercase bg-white text-base-300 fontbold divider">
 					Checked Recently
 				</div>
