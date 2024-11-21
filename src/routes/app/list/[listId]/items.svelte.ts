@@ -6,7 +6,11 @@ let items = $state([] as ListItem[]);
 let notifications = notificationsStore();
 
 export function itemStore(initialState?: ListItem[]) {
-  const sort = () => {
+  const sort = (fn?: (a: ListItem, b: ListItem) => number) => {
+    if (fn) {
+      items = items.sort(fn);
+      return;
+    }
     items = items.sort((a, b) => {
       // sort by checked/not checked and name
       return (
@@ -101,11 +105,14 @@ export function itemStore(initialState?: ListItem[]) {
         !i.checkedAt || moment().diff(moment(i.checkedAt), "hours") < 6
       );
     },
-    get checked() {
+    get recentlyChecked() {
       return items.filter((i) =>
         // Only show recently checked items
         !!i.checkedAt && moment().diff(moment(i.checkedAt), "hours") < 6
       );
+    },
+    get checked() {
+      return items.filter((i) => !!i.checkedAt);
     },
     get unchecked() {
       return items.filter((i) => !i.checkedAt);

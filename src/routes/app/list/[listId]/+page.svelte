@@ -4,6 +4,9 @@
 	import Settings from '$lib/components/icons/Settings.svelte';
 	import ShoppingCard from '$lib/components/icons/ShoppingCard.svelte';
 	import ListItem from '$lib/components/ListItem/index.svelte';
+	import ItemView from '$lib/components/ListItem/ItemView.svelte';
+	import Fuse from 'fuse.js';
+	import { untrack } from 'svelte';
 	import { itemStore } from './items.svelte.js';
 	import NewItemInput from './NewItemInput.svelte';
 
@@ -19,6 +22,44 @@
 
 	const checkItem = (id: string) => {
 		items.check(id, mode === 'shopping');
+	};
+
+	// let inputSearchResult = $derived.by(() => {
+	// 	const input = newItemFields.name?.toLowerCase() || '';
+	// 	if (!input) return [];
+	// 	return untrack(() => {
+	// 		return items.all.filter((item) => item.name.toLowerCase().includes(input));
+	// 	});
+	// });
+
+	const fuse = new Fuse(items.all, {
+		keys: [{ name: 'name', weight: 2 }, 'description'],
+		threshold: 0.3
+	});
+	$effect(() => {
+		fuse.setCollection(items.all);
+		untrack(() => {
+			search(newItemFields?.name);
+		});
+	});
+
+	let newItemFields: Record<string, string> = $state({});
+	let newItemInput: HTMLInputElement | null = $state(null);
+
+	let itemsSearchResult: string[] = $state([]);
+	$effect(() => {
+		search(newItemFields.name?.toLowerCase());
+	});
+
+	const search = (input: string) => {
+		if (!input) {
+			itemsSearchResult = [];
+			return;
+		}
+		itemsSearchResult = fuse
+			.search(input)
+			.map((r) => r.item.id)
+			.slice(0, 3);
 	};
 </script>
 
@@ -74,12 +115,12 @@
 			{#each items.unchecked as item}
 				<ListItem remove={items.remove} check={checkItem} {item} {mode} />
 			{/each}
-			{#if items.checked.length > 0}
+			{#if items.recentlyChecked.length > 0}
 				<div class="text-xs uppercase bg-white text-base-300 fontbold divider">
 					Checked Recently
 				</div>
 			{/if}
-			{#each items.checked as item}
+			{#each items.recentlyChecked as item}
 				<ListItem remove={items.remove} check={checkItem} {item} {mode} />
 			{/each}
 		{:else}
@@ -96,9 +137,23 @@
 	</div>
 
 	{#if mode === 'edit'}
-		<div class="sticky bottom-0 flex flex-col justify-center w-full py-4 bg-white">
+		<div class="sticky bottom-0 flex flex-col justify-center w-full gap-2 py-4 bg-white">
+			{#if itemsSearchResult.length > 0}
+				<div class="flex flex-col gap-1">
+					{#each items.all.filter((i) => itemsSearchResult.includes(i.id)) as item}
+						<ItemView
+							check={() => {
+								newItemFields.name = '';
+								newItemInput?.focus();
+								checkItem(item.id);
+							}}
+							{item}
+						/>
+					{/each}
+				</div>
+			{/if}
 			<div class="w-full bg-white">
-				<NewItemInput />
+				<NewItemInput bind:values={newItemFields} bind:input={newItemInput} />
 			</div>
 		</div>
 	{/if}

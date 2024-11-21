@@ -9,8 +9,14 @@
 
 	let items = itemStore();
 
-	let input: HTMLInputElement | null = $state(null);
-	let values: Record<string, string> = $state({});
+	let {
+		input = $bindable(null),
+		values = $bindable({})
+	}: {
+		input?: HTMLInputElement | null;
+		values?: Record<string, string>;
+	} = $props();
+
 	let errors: Record<string, string> = $state({});
 	export const clearError = () => {
 		errors = {};
