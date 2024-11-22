@@ -113,7 +113,13 @@
 			{/if}
 
 			{#each items.unchecked as item}
-				<ListItem remove={items.remove} check={checkItem} {item} {mode} />
+				<ListItem
+					class="rounded-lg bg-base-200"
+					remove={items.remove}
+					check={checkItem}
+					{item}
+					{mode}
+				/>
 			{/each}
 			{#if items.recentlyChecked.length > 0}
 				<div class="text-xs uppercase bg-white text-base-300 fontbold divider">
@@ -121,27 +127,42 @@
 				</div>
 			{/if}
 			{#each items.recentlyChecked as item}
-				<ListItem remove={items.remove} check={checkItem} {item} {mode} />
+				<ListItem
+					class="rounded-lg bg-base-200"
+					remove={items.remove}
+					check={checkItem}
+					{item}
+					{mode}
+				/>
 			{/each}
 		{:else}
 			{#if items.all.length === 0}
-				<div class="flex items-center justify-center text-lg text-center text-gray-400 grow">
+				<div class="flex items-center justify-center text-lg text-center text-slate-500 grow">
 					<span> use the input below to add your first item </span>
 				</div>
 			{/if}
 
 			{#each items.all as item}
-				<ListItem remove={items.remove} check={checkItem} {item} {mode} />
+				<ListItem
+					class="rounded-lg bg-base-200"
+					remove={items.remove}
+					check={checkItem}
+					{item}
+					{mode}
+				/>
 			{/each}
 		{/if}
 	</div>
 
 	{#if mode === 'edit'}
-		<div class="sticky bottom-0 flex flex-col justify-center w-full gap-2 py-4 bg-white">
+		<div
+			class="sticky bottom-0 left-0 flex flex-col justify-center w-screen max-w-xl gap-4 p-4 -mx-4 -mb-4 bg-black bg-opacity-50 rounded-t-xl"
+		>
 			{#if itemsSearchResult.length > 0}
-				<div class="flex flex-col gap-1">
+				<div class="flex flex-col gap-2">
 					{#each items.all.filter((i) => itemsSearchResult.includes(i.id)) as item}
 						<ItemView
+							class="bg-white rounded-lg"
 							check={() => {
 								newItemFields.name = '';
 								newItemInput?.focus();
@@ -152,7 +173,7 @@
 					{/each}
 				</div>
 			{/if}
-			<div class="w-full bg-white">
+			<div class="w-full bg-white rounded-lg">
 				<NewItemInput bind:values={newItemFields} bind:input={newItemInput} />
 			</div>
 		</div>

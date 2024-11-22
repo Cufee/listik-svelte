@@ -3,21 +3,17 @@
 	import ItemEdit from './ItemEdit.svelte';
 	import ItemView from './ItemView.svelte';
 
-	let {
-		item,
-		mode,
-		check,
-		remove
-	}: {
+	let props: {
 		item: ListItem;
 		mode: 'shopping' | 'edit';
 		check: (id: string) => void;
 		remove: (id: string) => void;
+		class?: string;
 	} = $props();
 </script>
 
-{#if mode === 'shopping'}
-	<ItemView {item} {check} />
+{#if props.mode === 'shopping'}
+	<ItemView {...props} />
 {:else}
-	<ItemEdit {item} {check} {remove} />
+	<ItemEdit {...props} />
 {/if}

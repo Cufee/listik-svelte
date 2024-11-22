@@ -79,7 +79,7 @@
 <form
 	method="POST"
 	action="?/save-item"
-	class="flex items-center h-12 max-w-3xl px-4 overflow-hidden rounded-lg grow bg-base-200"
+	class="flex items-center h-12 max-w-3xl px-4 overflow-hidden grow"
 	onsubmit={handleSubmit}
 	bind:this={form}
 >

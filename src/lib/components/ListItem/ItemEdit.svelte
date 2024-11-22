@@ -6,12 +6,18 @@
 	let {
 		item,
 		check,
-		remove
-	}: { item: ListItem; check: (id: string) => void; remove: (id: string) => void } = $props();
+		remove,
+		class: classProp
+	}: {
+		item: ListItem;
+		check: (id: string) => void;
+		remove: (id: string) => void;
+		class?: string;
+	} = $props();
 </script>
 
 <div class="flex items-center gap-1">
-	<div class="flex gap-2 px-2 py-2 rounded-lg bg-base-200 grow">
+	<div class={'flex gap-2 px-2 py-2 grow ' + classProp}>
 		<button onclick={() => check(item.id)} class="cursor-pointer group">
 			<ItemCheckbox {item} />
 		</button>
