@@ -9,6 +9,10 @@
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 </script>
 
+<svelte:head>
+	<title>Listik</title>
+</svelte:head>
+
 <main class="flex flex-col max-w-xl gap-2 p-2 mx-auto h-svh underline-offset-4">
 	<Notifications />
 	<Navbar user={data.user} />

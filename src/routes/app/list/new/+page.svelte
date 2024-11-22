@@ -5,6 +5,10 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
+<svelte:head>
+	<title>Listik - New List</title>
+</svelte:head>
+
 <div class="flex flex-col justify-center w-full max-w-sm gap-4 mx-auto">
 	<h1 class="text-xl text-center">Create a new list</h1>
 	<form

@@ -5,6 +5,10 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
+<svelte:head>
+	<title>Welcome to Listik</title>
+</svelte:head>
+
 <div class="flex flex-col items-center w-full max-w-xl gap-6 m-auto text-center">
 	<span class="text-2xl font-bold"> Welcome to Listik! </span>
 	<div class="flex flex-col items-center w-full gap-2">

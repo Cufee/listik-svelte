@@ -63,6 +63,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Listik - {data.list.name}</title>
+</svelte:head>
+
 <div class="flex flex-col gap-4 grow">
 	<div class="flex flex-row items-end justify-between gap-4">
 		<div class="flex flex-col overflow-hidden">

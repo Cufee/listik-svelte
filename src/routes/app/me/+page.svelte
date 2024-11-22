@@ -37,6 +37,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Listik - Profile</title>
+</svelte:head>
+
 <div class="flex flex-col gap-4">
 	<div class="flex flex-col">
 		<h1 class="text-lg font-bold">Settings</h1>

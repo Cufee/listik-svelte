@@ -6,6 +6,7 @@
 
 <svelte:head>
 	<script src="https://accounts.google.com/gsi/client"></script>
+	<title>Listik - Login</title>
 </svelte:head>
 <div class="flex flex-col items-center justify-center gap-4">
 	<h1 class="text-xl">Welcome to Listik!</h1>

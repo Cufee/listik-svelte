@@ -4,6 +4,10 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
+<svelte:head>
+	<title>How to use Listik</title>
+</svelte:head>
+
 <div class="flex flex-col gap-4">
 	<span class="text-xl text-center">A guide on using the app will be here at some point</span>
 	<div class="flex items-center justify-center">
