@@ -15,6 +15,7 @@ services:
     build:
       dockerfile: Dockerfile
     command: /app
+    restart: always
     env_file:
       - .env
     volumes:
