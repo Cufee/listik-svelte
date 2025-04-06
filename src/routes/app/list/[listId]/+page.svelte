@@ -164,8 +164,9 @@
 	</div>
 
 	{#if mode === 'edit'}
+		<div class="w-full h-14"></div>
 		<div
-			class="sticky bottom-0 left-0 flex flex-col justify-center w-screen max-w-xl gap-4 p-2 pb-4 -mx-4 -mb-4 bg-base-300 rounded-t-xl"
+			class="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-xl flex flex-col gap-4 p-2 pb-4 bg-base-300 rounded-t-xl"
 		>
 			{#if itemsSearchResult.length > 0}
 				<div class="flex flex-col gap-2">
