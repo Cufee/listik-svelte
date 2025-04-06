@@ -165,7 +165,7 @@
 
 	{#if mode === 'edit'}
 		<div
-			class="sticky bottom-0 left-0 flex flex-col justify-center w-screen max-w-xl gap-4 p-4 -mx-4 -mb-4 bg-black bg-opacity-50 rounded-t-xl"
+			class="sticky bottom-0 left-0 flex flex-col justify-center w-screen max-w-xl gap-4 p-2 pb-4 -mx-2 -mb-4 bg-base-300 rounded-t-xl"
 		>
 			{#if itemsSearchResult.length > 0}
 				<div class="flex flex-col gap-2">
@@ -182,7 +182,7 @@
 					{/each}
 				</div>
 			{/if}
-			<div class="w-full bg-white rounded-lg">
+			<div class="w-full bg-white rounded-lg shadow-md">
 				<NewItemInput bind:values={newItemFields} bind:input={newItemInput} />
 			</div>
 		</div>
