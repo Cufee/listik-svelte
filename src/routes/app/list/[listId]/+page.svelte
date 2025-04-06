@@ -6,9 +6,10 @@
 	import ListItem from '$lib/components/ListItem/index.svelte';
 	import ItemView from '$lib/components/ListItem/ItemView.svelte';
 	import Fuse from 'fuse.js';
-	import { untrack } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import { itemStore } from './items.svelte.js';
 	import NewItemInput from './NewItemInput.svelte';
+	import { browser } from '$app/environment';
 
 	let { data } = $props();
 	let items = itemStore(data.list.items);
@@ -23,14 +24,6 @@
 	const checkItem = (id: string) => {
 		items.check(id, mode === 'shopping');
 	};
-
-	// let inputSearchResult = $derived.by(() => {
-	// 	const input = newItemFields.name?.toLowerCase() || '';
-	// 	if (!input) return [];
-	// 	return untrack(() => {
-	// 		return items.all.filter((item) => item.name.toLowerCase().includes(input));
-	// 	});
-	// });
 
 	const fuse = new Fuse(items.all, {
 		keys: [{ name: 'name', weight: 2 }, 'description'],
@@ -61,6 +54,18 @@
 			.map((r) => r.item.id)
 			.slice(0, 3);
 	};
+
+	const onFocus = () => {
+		items.sync(data.list.id);
+	};
+	onMount(() => {
+		window.addEventListener('focus', onFocus);
+	});
+	onDestroy(() => {
+		if (browser) {
+			window.removeEventListener('focus', onFocus);
+		}
+	});
 </script>
 
 <svelte:head>

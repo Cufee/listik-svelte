@@ -79,7 +79,7 @@
 <form
 	method="POST"
 	action="?/save-item"
-	class="flex items-center h-12 max-w-3xl px-4 overflow-hidden grow"
+	class="flex overflow-hidden items-center px-4 max-w-3xl h-12 grow"
 	onsubmit={handleSubmit}
 	bind:this={form}
 >
@@ -88,7 +88,7 @@
 		size="2"
 		class="w-12 !outline-none text-center no-scrollbar rounded-none bg-base-200 mr-2 checked:bg-base-300"
 	>
-		<option value="-1" class="flex items-center justify-center h-12 rounded-r-md" selected>∞</option
+		<option value="-1" class="flex justify-center items-center h-12 rounded-r-md" selected>∞</option
 		>
 		{#each { length: 99 } as _, i}
 			<option value={i + 1} class="py-2 rounded-r-md">{i + 1}</option>
@@ -101,6 +101,7 @@
 		type="text"
 		minlength="1"
 		maxlength="32"
+		autocomplete="off"
 		placeholder="bananas"
 		class="w-full grow !outline-none bg-transparent rounded-none placeholder:text-gray-400"
 		bind:value={values.name}

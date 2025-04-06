@@ -17,10 +17,11 @@
 </script>
 
 <div class="flex items-center gap-1">
-	<div class={'flex gap-2 px-2 py-2 grow ' + classProp}>
-		<button onclick={() => check(item.id)} class="cursor-pointer group">
-			<ItemCheckbox {item} />
-		</button>
+	<button
+		onclick={() => check(item.id)}
+		class={'flex items-center gap-2 px-2 py-2 hover:bg-base-300 group grow ' + classProp}
+	>
+		<ItemCheckbox {item} />
 
 		<div class="flex items-center gap-1">
 			{#if (item.quantity ?? -1) > 0}
@@ -28,7 +29,7 @@
 			{/if}
 			<span>{item.name}</span>
 		</div>
-	</div>
+	</button>
 
 	<button
 		onclick={() => remove(item.id)}
