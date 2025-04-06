@@ -13,7 +13,7 @@
 	<title>Listik</title>
 </svelte:head>
 
-<main class="flex flex-col max-w-xl gap-2 p-2 mx-auto h-svh underline-offset-4">
+<main class="flex flex-col max-w-xl gap-2 p-2 mx-auto h-lvh underline-offset-4">
 	<Notifications />
 	<Navbar user={data.user} />
 	<div class="flex flex-col px-2 pb-2 grow">
